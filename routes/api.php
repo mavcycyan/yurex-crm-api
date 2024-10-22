@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Clients\ClientsController;
+use App\Http\Controllers\Clients\ClientWorksController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -20,5 +21,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::resource('/clients', ClientsController::class)->except([
+    'edit', 'create'
+]);
+
+Route::resource('/client_works', ClientWorksController::class)->except([
     'edit', 'create'
 ]);

@@ -16,7 +16,9 @@ class ClientsService extends Service
 
     public static function show($id, Request $request) {
         $client = Client::find($id);
-        return self::sendResponse($client, 'Client "' . $client->full_name . '" returned successfully');
+        $res = $client;
+        $res->client_works = $client->client_works;
+        return self::sendResponse($res, 'Client "' . $client->full_name . '" returned successfully');
     }
 
     public static function store(Request $request) {
@@ -40,11 +42,11 @@ class ClientsService extends Service
         $validator = Validator::make($input, [
             'full_name' => 'required',
         ]);
+        dd($client);
 
         if($validator->fails()){
             return self::sendError('Validation Error.', $validator->errors());
         }
-
 
         $client->full_name = $input['full_name'];
         $client->where_knows = $input['where_knows'];
@@ -63,6 +65,16 @@ class ClientsService extends Service
 
         if (!$client) {
             return self::sendError('Client not found.');
+        }
+
+//        $works = ClientWork::select('id')
+//            ->where('client_id', $id)
+//            ->get();
+        $works = $client->client_works;
+        if (count($works) > 0) {
+            foreach ($works as $work) {
+                $work->delete();
+            }
         }
         $client->delete();
 

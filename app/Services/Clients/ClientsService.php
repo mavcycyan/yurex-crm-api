@@ -42,7 +42,6 @@ class ClientsService extends Service
         $validator = Validator::make($input, [
             'full_name' => 'required',
         ]);
-        dd($client);
 
         if($validator->fails()){
             return self::sendError('Validation Error.', $validator->errors());

@@ -18,7 +18,7 @@ class SubscribersService extends Service
     public static function show($id, Request $request) {
         $subscriber = Subscriber::find($id);
         $res = $subscriber;
-//        $res->client_works = $subscriber->client_works;
+        $res->subscriber_works = $subscriber->subscriber_works;
         return self::sendResponse($res, 'Subscriber "' . $subscriber->name . '" returned successfully');
     }
 

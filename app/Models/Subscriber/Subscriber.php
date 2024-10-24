@@ -4,6 +4,7 @@ namespace App\Models\Subscriber;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Subscriber extends Model
 {
@@ -12,4 +13,9 @@ class Subscriber extends Model
     protected $fillable = [
         'name', 'edrpou', 'contract_date', 'responsible_person_id', 'contact_person_name', 'contact_person_phone', 'director_person_name', 'director_person_phone', 'legal_address', 'actual_address', 'info'
     ];
+
+    public function subscriber_works(): HasMany
+    {
+        return $this->hasMany(SubscriberWork::class);
+    }
 }

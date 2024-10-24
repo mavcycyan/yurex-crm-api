@@ -3,6 +3,7 @@
 use App\Http\Controllers\Clients\ClientsController;
 use App\Http\Controllers\Clients\ClientWorksController;
 use App\Http\Controllers\Subscribers\SubscribersController;
+use App\Http\Controllers\Subscribers\SubscriberWorksController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -33,6 +34,6 @@ Route::resource('/client_works', ClientWorksController::class)->except([
 Route::resource('/subscribers', SubscribersController::class)->except([
     'edit', 'create'
 ]);
-Route::resource('/subscribers_works', ClientWorksController::class)->except([
+Route::resource('/subscriber_works', SubscriberWorksController::class)->except([
     'edit', 'create'
 ]);

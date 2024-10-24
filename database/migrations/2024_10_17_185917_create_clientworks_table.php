@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('client_works', function (Blueprint $table) {
             $table->id();
-            $table->string('visit_date');
+            $table->date('visit_date');
             $table->string('visit_purpose');
             $table->string('what_done');
             $table->string('result');

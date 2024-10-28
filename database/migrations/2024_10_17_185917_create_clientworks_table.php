@@ -15,9 +15,9 @@ return new class extends Migration
             $table->id();
             $table->date('visit_date');
             $table->string('visit_purpose');
-            $table->string('what_done');
-            $table->string('result');
-            $table->string('fee');
+            $table->string('what_done')->nullable();
+            $table->string('result')->nullable();
+            $table->string('fee')->nullable();
             $table->unsignedBigInteger('client_id');
             $table->foreign('client_id')->references('id')->on('clients');
             $table->timestamps();

@@ -14,18 +14,18 @@ return new class extends Migration
         Schema::create('subscribers', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('edrpou');
-            $table->date('contract_date');
-            $table->unsignedBigInteger('responsible_person_id');
-            $table->string('contact_person_name');
-            $table->string('contact_person_phone');
-            $table->string('director_person_name');
-            $table->string('director_person_phone');
-            $table->string('legal_address');
-            $table->string('actual_address');
+            $table->string('edrpou')->nullable();
+            $table->date('contract_date')->nullable();
+            $table->unsignedBigInteger('responsible_person_id')->nullable();
+            $table->string('contact_person_name')->nullable();
+            $table->string('contact_person_phone')->nullable();
+            $table->string('director_person_name')->nullable();
+            $table->string('director_person_phone')->nullable();
+            $table->string('legal_address')->nullable();
+            $table->string('actual_address')->nullable();
 //            $table->string('last_pay_date'); get from another table
 //            $table->string('fee'); get from another table
-            $table->string('info');
+            $table->string('info')->nullable();
             $table->foreign('responsible_person_id')->references('id')->on('users');
             $table->timestamps();
         });

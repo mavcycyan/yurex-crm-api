@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('subscriber_works', function (Blueprint $table) {
             $table->id();
             $table->date('date');
-            $table->string('what_done')->nullable();
+            $table->text('what_done')->nullable();
             $table->string('result')->nullable();
             $table->unsignedBigInteger('subscriber_id');
             $table->foreign('subscriber_id')->references('id')->on('subscribers');
@@ -27,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('subscriberworks');
+        Schema::dropIfExists('subscriber_works');
     }
 };

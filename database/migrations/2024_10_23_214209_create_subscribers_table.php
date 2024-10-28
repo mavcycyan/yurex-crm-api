@@ -25,7 +25,7 @@ return new class extends Migration
             $table->string('actual_address')->nullable();
 //            $table->string('last_pay_date'); get from another table
 //            $table->string('fee'); get from another table
-            $table->string('info')->nullable();
+            $table->text('info')->nullable();
             $table->foreign('responsible_person_id')->references('id')->on('users');
             $table->timestamps();
         });

@@ -14,6 +14,10 @@ class ClientWork extends Model
         'visit_date', 'visit_purpose', 'what_done', 'result', 'fee', 'client_id'
     ];
 
+    protected $casts = [
+        'what_done' => 'array',
+    ];
+
     public function client(): BelongsTo
     {
         return $this->belongsTo(Client::class);

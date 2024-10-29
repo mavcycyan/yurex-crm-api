@@ -14,6 +14,10 @@ class SubscriberWork extends Model
         'date', 'what_done', 'result', 'subscriber_id'
     ];
 
+    protected $casts = [
+        'what_done' => 'array',
+    ];
+
     public function subscriber(): BelongsTo
     {
         return $this->belongsTo(Subscriber::class);

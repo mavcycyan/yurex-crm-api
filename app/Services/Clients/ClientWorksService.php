@@ -5,6 +5,7 @@ namespace App\Services\Clients;
 use App\Models\Client\ClientWork;
 use App\Services\Service;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Validator;
 
 class ClientWorksService extends Service
@@ -69,7 +70,7 @@ class ClientWorksService extends Service
         }
 
 
-        $work->visit_date = $input['visit_date'];
+        $work->visit_date = Carbon::createFromFormat('Y-m-d', $input['visit_date']);
         $work->visit_purpose = $input['visit_purpose'];
         $work->what_done = $input['what_done'];
         $work->result = $input['result'];

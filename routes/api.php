@@ -1,5 +1,9 @@
 <?php
 
+use App\Http\Controllers\Advocates\AdvocateCasesController;
+use App\Http\Controllers\Advocates\AdvocateCategoriesController;
+use App\Http\Controllers\Advocates\AdvocatesController;
+use App\Http\Controllers\Advocates\AdvocateWorksController;
 use App\Http\Controllers\Clients\ClientsController;
 use App\Http\Controllers\Clients\ClientWorksController;
 use App\Http\Controllers\Subscribers\SubscribersController;
@@ -35,5 +39,19 @@ Route::resource('/subscribers', SubscribersController::class)->except([
     'edit', 'create'
 ]);
 Route::resource('/subscriber_works', SubscriberWorksController::class)->except([
+    'edit', 'create'
+]);
+
+//advocates routes
+Route::resource('/advocates', AdvocatesController::class)->except([
+    'edit', 'create'
+]);
+Route::resource('/advocates_categories', AdvocateCategoriesController::class)->except([
+    'edit', 'create'
+]);
+Route::resource('/advocates_cases', AdvocateCasesController::class)->except([
+    'edit', 'create'
+]);
+Route::resource('/advocates_works', AdvocateWorksController::class)->except([
     'edit', 'create'
 ]);

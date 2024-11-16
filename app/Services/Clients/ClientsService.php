@@ -5,6 +5,7 @@ namespace App\Services\Clients;
 use App\Models\Client\Client;
 use App\Services\Service;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class ClientsService extends Service
@@ -17,7 +18,12 @@ class ClientsService extends Service
     public static function show($id, Request $request) {
         $client = Client::find($id);
         $res = $client;
-        $res->client_works = $client->client_works;
+        if (isset($client->client_works)) {
+            $res->client_works = $client->client_works->map(function ($item) {
+                $item->what_done = unserialize($item->what_done);
+                return $item;
+            });;
+        }
         return self::sendResponse($res, 'Client "' . $client->full_name . '" returned successfully');
     }
 

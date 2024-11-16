@@ -32,6 +32,10 @@ class AdvocateWorksService extends Service
         if ($validator->fails()) {
             return self::sendError('Validation Error.', $validator->errors());
         }
+
+        if (isset($input['what_done']) && $input['what_done'] !== '') {
+            $input['what_done'] = serialize($input['what_done']);
+        }
         $input['date'] = Carbon::createFromFormat('Y-m-d', $input['date']);
         $work = AdvocateWork::create($input);
         return self::sendResponse($work, 'Advocate work created successfully');
@@ -50,6 +54,10 @@ class AdvocateWorksService extends Service
             return self::sendError('Validation Error.', $validator->errors());
         }
 
+
+        if (isset($input['what_done']) && $input['what_done'] !== '') {
+            $input['what_done'] = serialize($input['what_done']);
+        }
 
         $work->date = Carbon::createFromFormat('Y-m-d', $input['date']);
         $work->what_done = $input['what_done'];

@@ -31,6 +31,10 @@ class SubscriberWorksService extends Service
         if ($validator->fails()) {
             return self::sendError('Validation Error.', $validator->errors());
         }
+
+        if (isset($input['what_done']) && $input['what_done'] !== '') {
+            $input['what_done'] = serialize($input['what_done']);
+        }
         $input['date'] = Carbon::createFromFormat('Y-m-d', $input['date']);
         $work = SubscriberWork::create($input);
         return self::sendResponse($work, 'Subscriber work created successfully');
@@ -49,6 +53,10 @@ class SubscriberWorksService extends Service
             return self::sendError('Validation Error.', $validator->errors());
         }
 
+
+        if (isset($input['what_done']) && $input['what_done'] !== '') {
+            $input['what_done'] = serialize($input['what_done']);
+        }
 
         $work->date = Carbon::createFromFormat('Y-m-d', $input['date']);
         $work->what_done = $input['what_done'];

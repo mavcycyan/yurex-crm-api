@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('subscriber_works', function (Blueprint $table) {
             $table->id();
             $table->date('date');
-            $table->text('what_done')->nullable();
+            $table->longText('what_done')->nullable();
             $table->string('result')->nullable();
             $table->unsignedBigInteger('subscriber_id');
             $table->foreign('subscriber_id')->references('id')->on('subscribers');

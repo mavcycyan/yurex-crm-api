@@ -19,7 +19,7 @@ class ClientWorksService extends Service
                     'visit_date' => $work->visit_date,
                     'visit_purpose' => $work->visit_purpose,
                     'where_knows' => $work->client->where_knows,
-                    'name' => $work->client->full_name,
+                    'full_name' => $work->client->full_name,
                     'phone' => $work->client->phone,
                     'result' => $work->result,
                     'fee' => $work->fee,
@@ -35,6 +35,7 @@ class ClientWorksService extends Service
 
     public static function show($id, Request $request) {
         $work = ClientWork::find($id);
+        $work->what_done = unserialize($work->what_done);
         return self::sendResponse($work, 'Client work returned successfully');
     }
 
@@ -49,6 +50,10 @@ class ClientWorksService extends Service
 
         if ($validator->fails()) {
             return self::sendError('Validation Error.', $validator->errors());
+        }
+
+        if (isset($input['what_done']) && $input['what_done'] !== '') {
+            $input['what_done'] = serialize($input['what_done']);
         }
 
         $work = ClientWork::create($input);
@@ -67,6 +72,10 @@ class ClientWorksService extends Service
 
         if($validator->fails()){
             return self::sendError('Validation Error.', $validator->errors());
+        }
+
+        if (isset($input['what_done']) && $input['what_done'] !== '') {
+            $input['what_done'] = serialize($input['what_done']);
         }
 
 

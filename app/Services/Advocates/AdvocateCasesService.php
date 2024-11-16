@@ -19,7 +19,12 @@ class AdvocateCasesService extends Service
     public static function show($id, Request $request) {
         $case = AdvocateCase::find($id);
         $res = $case;
-        $res->advocate_works = $case->advocate_works;
+        if (isset($case->advocate_works)) {
+            $res->advocate_works = $case->advocate_works->map(function ($item) {
+                $item->what_done = unserialize($item->what_done);
+                return $item;
+            });;
+        }
         return self::sendResponse($res, 'Advocate case "' . $case->full_name . '" returned successfully');
     }
 
@@ -32,6 +37,10 @@ class AdvocateCasesService extends Service
 
         if ($validator->fails()) {
             return self::sendError('Validation Error.', $validator->errors());
+        }
+
+        if (isset($input['advocates']) && $input['advocates'] !== '') {
+            $input['advocates'] = serialize($input['advocates']);
         }
 
         $case = AdvocateCase::create($input);
@@ -48,6 +57,10 @@ class AdvocateCasesService extends Service
 
         if($validator->fails()){
             return self::sendError('Validation Error.', $validator->errors());
+        }
+
+        if (isset($input['advocates']) && $input['advocates'] !== '') {
+            $input['advocates'] = serialize($input['advocates']);
         }
 
         $case->visit_date = Carbon::createFromFormat('Y-m-d', $input['visit_date']);

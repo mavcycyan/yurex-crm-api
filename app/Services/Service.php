@@ -15,7 +15,7 @@ class Service
         if ($count_all !== null) {
             $response['all_items'] = $count_all;
         }
-        return $response;
+        return response()->json($response);
     }
     public static function sendError($error, $errorMessages = [], $code = 404) {
         $response = [
@@ -27,7 +27,7 @@ class Service
         if(!empty($errorMessages)){
             $response['data'] = $errorMessages;
         }
-        return $response;
+        return response()->json($response);
     }
     public static function filtering($params, $query) {
         if (isset($params['size']) && $params['size'] !== null) {

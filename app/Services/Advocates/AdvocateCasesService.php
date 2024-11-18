@@ -3,6 +3,7 @@
 namespace App\Services\Advocates;
 
 use App\Models\Advocate\AdvocateCase;
+use App\Models\Advocate\AdvocateCategory;
 use App\Models\User;
 use App\Services\Service;
 use Illuminate\Http\Request;
@@ -12,7 +13,23 @@ use Illuminate\Support\Facades\Validator;
 class AdvocateCasesService extends Service
 {
     public static function index(Request $request) {
-        $cases = AdvocateCase::all();
+        if (
+            isset($request['advocate_id']) &&
+            $request['advocate_id'] !== '' &&
+            isset($request['advocate_category_slug']) &&
+            $request['advocate_category_slug'] !== ''
+        ) {
+            $cat = AdvocateCategory::where('slug', '=', $request['advocate_category_slug'])->first();
+            if ($cat !== null) {
+                $cases = AdvocateCase::where('advocate_id', $request['advocate_id'])
+                    ->where('advocate_category_id', $cat->id)
+                    ->get();
+            } else {
+                return self::sendError('Wrong advocate category slug');
+            }
+        } else {
+            $cases = AdvocateCase::all();
+        }
         return self::sendResponse($cases->toArray(), 'Advocate cases returned successfully');
     }
 

@@ -17,6 +17,7 @@ class SubscriberWorksService extends Service
 
     public static function show($id, Request $request) {
         $work = SubscriberWork::find($id);
+        $work->what_done = unserialize($work->what_done);
         return self::sendResponse($work, 'Subscriber work returned successfully');
     }
 

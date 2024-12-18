@@ -18,6 +18,7 @@ class AdvocateWorksService extends Service
 
     public static function show($id, Request $request) {
         $work = AdvocateWork::find($id);
+        $work->what_done = unserialize($work->what_done);
         return self::sendResponse($work, 'Advocate work returned successfully');
     }
 

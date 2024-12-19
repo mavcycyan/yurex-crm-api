@@ -78,12 +78,12 @@ class SubscribersService extends Service
             return self::sendError('Client not found.');
         }
 
-//        $works = $subscriber->client_works;
-//        if (count($works) > 0) {
-//            foreach ($works as $work) {
-//                $work->delete();
-//            }
-//        }
+        $works = $subscriber->subscriber_works;
+        if (count($works) > 0) {
+            foreach ($works as $work) {
+                $work->delete();
+            }
+        }
         $subscriber->delete();
 
         return response()->json(['success' => true,'message' => 'Subscriber "' . $subscriber_name . '" deleted successfully.'], 200);

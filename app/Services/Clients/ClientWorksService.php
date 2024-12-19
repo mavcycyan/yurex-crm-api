@@ -97,7 +97,6 @@ class ClientWorksService extends Service
         if (!$work) {
             return self::sendError('Client work not found.');
         }
-        $work->Clients()->detach();
         $work->delete();
 
         return response()->json(['success' => true,'message' => 'Client work deleted successfully.'], 200);

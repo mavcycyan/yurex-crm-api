@@ -4,6 +4,7 @@ use App\Http\Controllers\Advocates\AdvocateCasesController;
 use App\Http\Controllers\Advocates\AdvocateCategoriesController;
 use App\Http\Controllers\Advocates\AdvocatesController;
 use App\Http\Controllers\Advocates\AdvocateWorksController;
+use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Clients\ClientsController;
 use App\Http\Controllers\Clients\ClientWorksController;
 use App\Http\Controllers\Subscribers\SubscribersController;
@@ -26,32 +27,41 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login', [AuthController::class, 'login']);
+
 //clients routes
-Route::resource('/clients', ClientsController::class)->except([
-    'edit', 'create'
-]);
-Route::resource('/client_works', ClientWorksController::class)->except([
-    'edit', 'create'
-]);
+Route::middleware(['auth:sanctum', 'role:root,director,lawyer'])->group(function () {
+    Route::resource('/clients', ClientsController::class)->except([
+        'edit', 'create'
+    ]);
+    Route::resource('/client_works', ClientWorksController::class)->except([
+        'edit', 'create'
+    ]);
+});
 
 //subscribers routes
-Route::resource('/subscribers', SubscribersController::class)->except([
-    'edit', 'create'
-]);
-Route::resource('/subscriber_works', SubscriberWorksController::class)->except([
-    'edit', 'create'
-]);
+Route::middleware(['auth:sanctum', 'role:root,director,lawyer'])->group(function () {
+    Route::resource('/subscribers', SubscribersController::class)->except([
+        'edit', 'create'
+    ]);
+    Route::resource('/subscriber_works', SubscriberWorksController::class)->except([
+        'edit', 'create'
+    ]);
+});
 
 //advocates routes
-Route::resource('/advocates', AdvocatesController::class)->except([
-    'edit', 'create'
-]);
-Route::resource('/advocates_categories', AdvocateCategoriesController::class)->except([
-    'edit', 'create'
-]);
-Route::resource('/advocates_cases', AdvocateCasesController::class)->except([
-    'edit', 'create'
-]);
-Route::resource('/advocates_works', AdvocateWorksController::class)->except([
-    'edit', 'create'
-]);
+Route::middleware(['auth:sanctum', 'role:root,director,advocate'])->group(function () {
+    Route::resource('/advocates', AdvocatesController::class)->except([
+        'edit', 'create'
+    ]);
+    Route::resource('/advocates_categories', AdvocateCategoriesController::class)->except([
+        'edit', 'create'
+    ]);
+    Route::resource('/advocates_cases', AdvocateCasesController::class)->except([
+        'edit', 'create'
+    ]);
+    Route::resource('/advocates_works', AdvocateWorksController::class)->except([
+        'edit', 'create'
+    ]);
+});

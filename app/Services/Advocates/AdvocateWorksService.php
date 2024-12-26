@@ -3,7 +3,6 @@
 namespace App\Services\Advocates;
 
 use App\Models\Advocate\AdvocateWork;
-use App\Models\User;
 use App\Services\Service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;

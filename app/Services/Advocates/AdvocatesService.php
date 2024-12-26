@@ -2,7 +2,7 @@
 
 namespace App\Services\Advocates;
 
-use App\Models\User;
+use App\Models\Auth\User;
 use App\Services\Service;
 use Illuminate\Http\Request;
 

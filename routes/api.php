@@ -53,7 +53,7 @@ Route::middleware(['auth:sanctum', 'role:root,director,lawyer'])->group(function
 //advocates routes
 Route::middleware(['auth:sanctum', 'role:root,director,advocate'])->group(function () {
     Route::resource('/advocates', AdvocatesController::class)->except([
-        'edit', 'create'
+        'edit', 'create', 'store', 'destroy'
     ]);
     Route::resource('/advocates_categories', AdvocateCategoriesController::class)->except([
         'edit', 'create'

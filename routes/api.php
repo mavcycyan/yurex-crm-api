@@ -58,6 +58,7 @@ Route::middleware(['auth:sanctum', 'role:root,director,advocate'])->group(functi
     Route::resource('/advocates_categories', AdvocateCategoriesController::class)->except([
         'edit', 'create'
     ]);
+    Route::get('/advocates_categories_byslug', [AdvocateCategoriesController::class, 'byslug']);
     Route::resource('/advocates_cases', AdvocateCasesController::class)->except([
         'edit', 'create'
     ]);

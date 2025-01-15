@@ -11,6 +11,9 @@ class AdvocateCategoriesController extends Controller
     public function index(Request $request) {
         return AdvocateCategoriesService::index($request);
     }
+    public function byslug(Request $request) {
+        return AdvocateCategoriesService::byslug($request);
+    }
     public function show($id, Request $request) {
         return AdvocateCategoriesService::show($id, $request);
     }

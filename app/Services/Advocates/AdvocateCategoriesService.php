@@ -14,6 +14,15 @@ class AdvocateCategoriesService extends Service
         return self::sendResponse($categories->toArray(), 'Advocate categories returned successfully');
     }
 
+    public static function byslug(Request $request) {
+        $input = $request->all();
+        if ($input && isset($input['slug']) && $input['slug'] !== '') {
+            $category = AdvocateCategory::where('slug', '=', $input['slug'])->first();
+            return self::sendResponse($category, 'Advocate category "' . $category->name . '" returned successfully');
+        }
+        return self::sendError('Validation Error.', ['Field \'slug\' not sent or is empty.']);
+    }
+
     public static function show($id, Request $request) {
         $category = AdvocateCategory::find($id);
         $res = $category;

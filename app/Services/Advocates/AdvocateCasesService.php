@@ -35,6 +35,7 @@ class AdvocateCasesService extends Service
     public static function show($id, Request $request) {
         $case = AdvocateCase::find($id);
         $res = $case;
+        $case->advocates = unserialize($case->advocates);
         if (isset($case->advocate_works)) {
             $res->advocate_works = $case->advocate_works->map(function ($item) {
                 $item->what_done = unserialize($item->what_done);

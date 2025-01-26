@@ -3,6 +3,8 @@
 namespace App\Services\Clients;
 
 use App\Models\Client\ClientWork;
+use App\Services\Finances\Clients\FinClientWorksPaymentsService;
+use App\Services\Finances\Clients\FinClientWorksPricesService;
 use App\Services\Service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -47,7 +49,6 @@ class ClientWorksService extends Service
             'visit_purpose' => 'required',
             'client_id' => 'required'
         ]);
-
         if ($validator->fails()) {
             return self::sendError('Validation Error.', $validator->errors());
         }
@@ -57,6 +58,16 @@ class ClientWorksService extends Service
         }
 
         $work = ClientWork::create($input);
+
+        if (isset($input['fee'])) {
+            $fee = ($input['fee'] !== '') ? $input['fee'] : 0;
+            $price = FinClientWorksPricesService::save_new(array('date' => $input['visit_date'], 'price' => $fee, 'client_work_id' => $work->id));
+        }
+
+        if (isset($input['payment']) && $price !== false) {
+            $fee = ($input['payment'] !== '') ? $input['payment'] : 0;
+            $payment = FinClientWorksPaymentsService::save_new(array('date' => $input['visit_date'], 'amount' => $fee, 'price_id' => $price->id));
+        }
         return self::sendResponse($work, 'Client work created successfully');
     }
 

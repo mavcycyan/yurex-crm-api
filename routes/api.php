@@ -7,6 +7,7 @@ use App\Http\Controllers\Advocates\AdvocateWorksController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Clients\ClientsController;
 use App\Http\Controllers\Clients\ClientWorksController;
+use App\Http\Controllers\Finances\Clients\FinClientWorksPrices;
 use App\Http\Controllers\Subscribers\SubscribersController;
 use App\Http\Controllers\Subscribers\SubscriberWorksController;
 use Illuminate\Http\Request;
@@ -65,4 +66,12 @@ Route::middleware(['auth:sanctum', 'role:root,director,advocate'])->group(functi
     Route::resource('/advocates_works', AdvocateWorksController::class)->except([
         'edit', 'create'
     ]);
+});
+
+//finance routes
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::resource('/fin/clientworks/prices', FinClientWorksPrices::class)->except([
+        'edit', 'create'
+    ]);
+    Route::put('/fin/clientworks/prices_bulk_update', [FinClientWorksPrices::class, 'bulk_update']);
 });

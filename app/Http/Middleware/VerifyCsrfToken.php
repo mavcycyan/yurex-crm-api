@@ -16,10 +16,12 @@ class VerifyCsrfToken extends Middleware
         'api/clients/*',
         'api/client_works',
         'api/client_works/*',
+
         'api/subscribers',
         'api/subscribers/*',
         'api/subscriber_works',
         'api/subscriber_works/*',
+
         'api/advocates',
         'api/advocates/*',
         'api/advocates_categories',
@@ -28,7 +30,11 @@ class VerifyCsrfToken extends Middleware
         'api/advocates_cases/*',
         'api/advocates_works',
         'api/advocates_works/*',
+
         'api/register',
         'api/login',
+
+        'api/fin/clientworks/prices',
+        'api/fin/clientworks/prices_bulk_update',
     ];
 }

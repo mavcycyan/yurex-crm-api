@@ -3,6 +3,7 @@
 namespace App\Services\Clients;
 
 use App\Models\Client\ClientWork;
+use App\Models\Finance\Client\FinClientWorkPrice;
 use App\Services\Finances\Clients\FinClientWorksPaymentsService;
 use App\Services\Finances\Clients\FinClientWorksPricesService;
 use App\Services\Service;
@@ -61,13 +62,18 @@ class ClientWorksService extends Service
 
         if (isset($input['fee'])) {
             $fee = ($input['fee'] !== '') ? $input['fee'] : 0;
-            $price = FinClientWorksPricesService::save_new(array('date' => $input['visit_date'], 'price' => $fee, 'client_work_id' => $work->id));
+            $for_save = array('date' => $input['visit_date'], 'price' => $fee, 'client_work_id' => $work->id);
+            if ($input['payment'] !== '' && $input['payment'] >= $fee) {
+                $for_save['date_end'] = Carbon::createFromFormat('Y-m-d', date('Y-m-d'));
+            }
+            $price = FinClientWorksPricesService::save_new($for_save);
+
+            if (isset($input['payment']) && $price !== false) {
+                $fee = ($input['payment'] !== '') ? $input['payment'] : 0;
+                $payment = FinClientWorksPaymentsService::save_new(array('date' => $input['visit_date'], 'amount' => $fee, 'fin_client_work_price_id' => $price->id));
+            }
         }
 
-        if (isset($input['payment']) && $price !== false) {
-            $fee = ($input['payment'] !== '') ? $input['payment'] : 0;
-            $payment = FinClientWorksPaymentsService::save_new(array('date' => $input['visit_date'], 'amount' => $fee, 'price_id' => $price->id));
-        }
         return self::sendResponse($work, 'Client work created successfully');
     }
 
@@ -105,6 +111,11 @@ class ClientWorksService extends Service
     public static function destroy($id) {
         $work = ClientWork::find($id);
 
+        FinClientWorkPrice::where('client_work_id', $id)
+            ->each(function ($price_item) {
+                $price_item->payments()->delete();
+                $price_item->delete();
+            });
         if (!$work) {
             return self::sendError('Client work not found.');
         }

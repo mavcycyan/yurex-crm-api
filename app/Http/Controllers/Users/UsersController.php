@@ -18,4 +18,7 @@ class UsersController extends Controller
     public function update(Request $request, $id) {
         return UsersService::update($request, $id);
     }
+    public function destroy($id) {
+        return UsersService::destroy($id);
+    }
 }

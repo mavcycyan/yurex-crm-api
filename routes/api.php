@@ -35,6 +35,7 @@ Route::middleware(['auth:sanctum', 'role:root,director'])->group(function () {
     Route::get('/users', [UsersController::class, 'index']);
     Route::get('/users/{id}', [UsersController::class, 'show']);
     Route::put('/users/{id}', [UsersController::class, 'update']);
+    Route::delete('/users/{id}', [UsersController::class, 'destroy']);
 });
 
 //clients routes

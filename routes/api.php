@@ -56,6 +56,7 @@ Route::middleware(['auth:sanctum', 'role:root,director,lawyer'])->group(function
     Route::resource('/subscriber_works', SubscriberWorksController::class)->except([
         'edit', 'create'
     ]);
+    Route::get('/lawyer_advocates', [AdvocatesController::class, 'index']);
 });
 
 //advocates routes

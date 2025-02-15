@@ -2,9 +2,13 @@
 
 namespace App\Services\Subscribers;
 
+use App\Models\Finance\Subscriber\FinSubscriberPrice;
 use App\Models\Subscriber\Subscriber;
+use App\Services\Finances\Subscribers\FinSubscribersPaymentsService;
+use App\Services\Finances\Subscribers\FinSubscribersPricesService;
 use App\Services\Service;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Validator;
 
 class SubscribersService extends Service
@@ -39,6 +43,20 @@ class SubscribersService extends Service
         }
 
         $subscriber = Subscriber::create($input);
+        if (isset($input['fee'])) {
+            $fee = ($input['fee'] !== '') ? $input['fee'] : 0;
+            $for_save = array('date' => $input['contract_date'], 'price' => $fee, 'subscriber_id' => $subscriber->id);
+            if ($input['payment'] !== '' && $input['payment'] >= $fee) {
+                $for_save['date_end'] = Carbon::createFromFormat('Y-m-d', date('Y-m-d'));
+            }
+            $price = FinSubscribersPricesService::save_new($for_save);
+
+            if (isset($input['payment']) && $price !== false) {
+                $fee = ($input['payment'] !== '') ? $input['payment'] : 0;
+                $payment = FinSubscribersPaymentsService::save_new(array('date' => $input['contract_date'], 'amount' => $fee, 'fin_subscriber_price_id' => $price->id));
+            }
+        }
+
         return self::sendResponse($subscriber, 'Subscriber created successfully');
     }
 
@@ -84,6 +102,11 @@ class SubscribersService extends Service
                 $work->delete();
             }
         }
+        FinSubscriberPrice::where('subscriber_id', $id)
+            ->each(function ($price_item) {
+                $price_item->payments()->delete();
+                $price_item->delete();
+            });
         $subscriber->delete();
 
         return response()->json(['success' => true,'message' => 'Subscriber "' . $subscriber_name . '" deleted successfully.'], 200);

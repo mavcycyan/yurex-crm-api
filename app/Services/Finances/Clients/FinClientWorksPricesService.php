@@ -16,11 +16,11 @@ class FinClientWorksPricesService extends Service
     public static function index(Request $request) {
 
         if (
-            isset($request['client_work_id']) &&
-            $request['client_work_id'] !== ''
+            isset($request['parent_id']) &&
+            $request['parent_id'] !== ''
         ) {
             $prices = FinClientWorkPrice::with('payments')
-            ->where('client_work_id', $request['client_work_id'])
+            ->where('client_work_id', $request['parent_id'])
             ->get();
         } else {
             $prices = FinClientWorkPrice::all();
@@ -93,11 +93,11 @@ class FinClientWorksPricesService extends Service
             ]
         }
     ],
-    "client_work_id": 9
+    "parent_id": 9
 }
          * */
         $input = $request->all();
-        $client_work_id = $input['client_work_id'];
+        $client_work_id = $input['parent_id'];
 
         if (count($input['prices']) > 0) {
             $prices = array();

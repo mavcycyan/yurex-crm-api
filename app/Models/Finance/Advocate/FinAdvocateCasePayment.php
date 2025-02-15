@@ -4,12 +4,18 @@ namespace App\Models\Finance\Advocate;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class FinAdvocateCasePayment extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'date', 'amount', 'price_id'
+        'date', 'amount', 'fin_advocate_case_price_id'
     ];
+
+    public function price(): BelongsTo
+    {
+        return $this->belongsTo(FinAdvocateCasePrice::class);
+    }
 }

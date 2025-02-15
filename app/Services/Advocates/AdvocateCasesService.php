@@ -4,6 +4,10 @@ namespace App\Services\Advocates;
 
 use App\Models\Advocate\AdvocateCase;
 use App\Models\Advocate\AdvocateCategory;
+use App\Models\Finance\Advocate\FinAdvocateCasePayment;
+use App\Models\Finance\Advocate\FinAdvocateCasePrice;
+use App\Services\Finances\Advocates\FinAdvocateCasesPaymentsService;
+use App\Services\Finances\Advocates\FinAdvocateCasesPricesService;
 use App\Services\Service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -61,6 +65,20 @@ class AdvocateCasesService extends Service
         }
 
         $case = AdvocateCase::create($input);
+        if (isset($input['fee'])) {
+            $fee = ($input['fee'] !== '') ? $input['fee'] : 0;
+            $for_save = array('date' => $input['visit_date'], 'price' => $fee, 'advocate_case_id' => $case->id);
+            if ($input['payment'] !== '' && $input['payment'] >= $fee) {
+                $for_save['date_end'] = Carbon::createFromFormat('Y-m-d', date('Y-m-d'));
+            }
+            $price = FinAdvocateCasesPricesService::save_new($for_save);
+
+            if (isset($input['payment']) && $price !== false) {
+                $fee = ($input['payment'] !== '') ? $input['payment'] : 0;
+                $payment = FinAdvocateCasesPaymentsService::save_new(array('date' => $input['visit_date'], 'amount' => $fee, 'fin_advocate_case_price_id' => $price->id));
+            }
+        }
+
         return self::sendResponse($case, 'Advocate case created successfully');
     }
 
@@ -106,6 +124,11 @@ class AdvocateCasesService extends Service
                 $work->delete();
             }
         }
+        FinAdvocateCasePrice::where('advocate_case_id', $id)
+            ->each(function ($price_item) {
+                $price_item->payments()->delete();
+                $price_item->delete();
+            });
         $case->delete();
 
         return response()->json(['success' => true,'message' => 'Case deleted successfully.'], 200);

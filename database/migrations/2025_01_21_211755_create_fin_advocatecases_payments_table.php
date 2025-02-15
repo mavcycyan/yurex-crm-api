@@ -16,7 +16,7 @@ return new class extends Migration
             $table->date('date')->nullable();
             $table->decimal('amount')->nullable();
             $table->unsignedBigInteger('price_id');
-            $table->foreign('price_id')->references('id')->on('fin_advocate_case_prices');
+            $table->foreign('fin_advocate_case_price_id')->references('id')->on('fin_advocate_case_prices');
             $table->timestamps();
         });
     }

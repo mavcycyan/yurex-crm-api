@@ -34,6 +34,9 @@ class AuthService extends Service
         $user = User::create([
             'name' => $input['name'],
             'email' => $input['email'],
+            'birthday' => $input['birthday'],
+            'address' => $input['address'],
+            'phone' => $input['phone'],
             'password' => Hash::make($input['password']),
             'role_id' => $input['role_id'],
         ]);

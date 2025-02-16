@@ -11,8 +11,14 @@ use Illuminate\Support\Facades\Validator;
 class AdvocateWorksService extends Service
 {
     public static function index(Request $request) {
-        $works = AdvocateWork::all();
-        return self::sendResponse($works->toArray(), 'Advocate works returned successfully');
+        $query = AdvocateWork::select('*');
+        $input = $request->all();
+        if (count($input) > 0) {
+            $query = self::pagination($input, $query);
+        }
+        $works = $query->get();
+        $count = AdvocateWork::select('*')->get()->count();
+        return self::sendResponse($works->toArray(), 'Advocate works returned successfully', $count);
     }
 
     public static function show($id, Request $request) {

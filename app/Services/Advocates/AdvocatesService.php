@@ -9,9 +9,14 @@ use Illuminate\Http\Request;
 class AdvocatesService extends Service
 {
     public static function index(Request $request) {
-        $users = User::where('role_id', 4)
-            ->get();
-        return self::sendResponse($users->toArray(), 'Advocates returned successfully');
+        $query = User::where('role_id', 4);
+        $input = $request->all();
+        if (count($input) > 0) {
+            $query = self::pagination($input, $query);
+        }
+        $users = $query->get();
+        $count = User::where('role_id', 4)->get()->count();
+        return self::sendResponse($users->toArray(), 'Advocates returned successfully', $count);
     }
 
     public static function show($id, Request $request) {

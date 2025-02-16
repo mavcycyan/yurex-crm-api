@@ -24,16 +24,28 @@ class AdvocateCasesService extends Service
         ) {
             $cat = AdvocateCategory::where('slug', '=', $request['advocate_category_slug'])->first();
             if ($cat !== null) {
-                $cases = AdvocateCase::where('advocate_id', $request['advocate_id'])
-                    ->where('advocate_category_id', $cat->id)
-                    ->get();
+                $query = AdvocateCase::where('advocate_id', $request['advocate_id'])
+                    ->where('advocate_category_id', $cat->id);
+                $input = $request->all();
+                if (count($input) > 0) {
+                    $query = self::pagination($input, $query);
+                }
+                $cases = $query->get();
+                $count = AdvocateCase::where('advocate_id', $request['advocate_id'])
+                    ->where('advocate_category_id', $cat->id)->get()->count();
             } else {
                 return self::sendError('Wrong advocate category slug');
             }
         } else {
-            $cases = AdvocateCase::all();
+            $query = AdvocateCase::select('*');
+            $input = $request->all();
+            if (count($input) > 0) {
+                $query = self::pagination($input, $query);
+            }
+            $cases = $query->get();
+            $count = AdvocateCase::select('*')->get()->count();
         }
-        return self::sendResponse($cases->toArray(), 'Advocate cases returned successfully');
+        return self::sendResponse($cases->toArray(), 'Advocate cases returned successfully', $count);
     }
 
     public static function show($id, Request $request) {

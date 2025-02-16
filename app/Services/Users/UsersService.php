@@ -12,8 +12,14 @@ use Illuminate\Support\Facades\Validator;
 class UsersService extends Service
 {
     public static function index(Request $request) {
-        $users = User::all();
-        return self::sendResponse($users->toArray(), 'Users returned successfully');
+        $query = User::select('*');
+        $input = $request->all();
+        if (count($input) > 0) {
+            $query = self::pagination($input, $query);
+        }
+        $users = $query->get();
+        $count = User::select('*')->get()->count();
+        return self::sendResponse($users->toArray(), 'Users returned successfully', $count);
     }
 
     public static function show($id, Request $request) {

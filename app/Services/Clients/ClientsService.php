@@ -11,8 +11,14 @@ use Illuminate\Support\Facades\Validator;
 class ClientsService extends Service
 {
     public static function index(Request $request) {
-        $clients = Client::all();
-        return self::sendResponse($clients->toArray(), 'Clients returned successfully');
+        $query = Client::select('*');
+        $input = $request->all();
+        if (count($input) > 0) {
+            $query = self::pagination($input, $query);
+        }
+        $clients = $query->get();
+        $count = Client::select('*')->get()->count();
+        return self::sendResponse($clients->toArray(), 'Clients returned successfully', $count);
     }
 
     public static function show($id, Request $request) {

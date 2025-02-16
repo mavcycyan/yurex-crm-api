@@ -29,13 +29,13 @@ class Service
         }
         return response()->json($response);
     }
-    public static function filtering($params, $query) {
-        if (isset($params['size']) && $params['size'] !== null) {
-            $query->limit($params['size']);
+    public static function pagination($params, $query) {
+        if (isset($params['pag_size']) && $params['pag_size'] !== null) {
+            $query->limit($params['pag_size']);
         }
 
-        if (isset($params['offset']) && $params['offset'] !== null) {
-            $query->offset($params['offset']);
+        if (isset($params['pag_offset']) && $params['pag_offset'] !== null) {
+            $query->offset($params['pag_offset']);
         }
         return $query;
     }

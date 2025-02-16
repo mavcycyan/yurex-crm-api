@@ -11,8 +11,14 @@ use Illuminate\Support\Facades\Validator;
 class SubscriberWorksService extends Service
 {
     public static function index(Request $request) {
-        $subscribers = SubscriberWork::all();
-        return self::sendResponse($subscribers->toArray(), 'Subscriber works returned successfully');
+        $query = SubscriberWork::select('*');
+        $input = $request->all();
+        if (count($input) > 0) {
+            $query = self::pagination($input, $query);
+        }
+        $subscribers = $query->get();
+        $count = SubscriberWork::select('*')->get()->count();
+        return self::sendResponse($subscribers->toArray(), 'Subscriber works returned successfully', $count);
     }
 
     public static function show($id, Request $request) {

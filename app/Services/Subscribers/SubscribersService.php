@@ -15,8 +15,14 @@ class SubscribersService extends Service
 {
 
     public static function index(Request $request) {
-        $subscribers = Subscriber::all();
-        return self::sendResponse($subscribers->toArray(), 'Subscribers returned successfully');
+        $query = Subscriber::select('*');
+        $input = $request->all();
+        if (count($input) > 0) {
+            $query = self::pagination($input, $query);
+        }
+        $subscribers = $query->get();
+        $count = Subscriber::select('*')->get()->count();
+        return self::sendResponse($subscribers->toArray(), 'Subscribers returned successfully', $count);
     }
 
     public static function show($id, Request $request) {

@@ -14,8 +14,12 @@ use Illuminate\Support\Facades\Validator;
 class ClientWorksService extends Service
 {
     public static function index(Request $request) {
-        $works = ClientWork::with('client')
-            ->get()
+        $query = ClientWork::with('client');
+        $input = $request->all();
+        if (count($input) > 0) {
+            $query = self::pagination($input, $query);
+        }
+        $works = $query->get()
             ->map(function ($work) {
                 return [
                     'id' => $work->id,
@@ -29,7 +33,22 @@ class ClientWorksService extends Service
                     'client_id' => $work->client_id,
                 ];
             });
-        return self::sendResponse($works->toArray(), 'Client works returned successfully');
+
+        $count = ClientWork::with('client')->get()
+            ->map(function ($work) {
+                return [
+                    'id' => $work->id,
+                    'visit_date' => $work->visit_date,
+                    'visit_purpose' => $work->visit_purpose,
+                    'where_knows' => $work->client->where_knows,
+                    'full_name' => $work->client->full_name,
+                    'phone' => $work->client->phone,
+                    'result' => $work->result,
+                    'fee' => $work->fee,
+                    'client_id' => $work->client_id,
+                ];
+            })->count();
+        return self::sendResponse($works->toArray(), 'Client works returned successfully', $count);
     }
     public static function get_by_client(Request $request) {
         $clients = ClientWork::all();

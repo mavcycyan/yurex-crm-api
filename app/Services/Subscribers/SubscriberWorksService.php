@@ -14,6 +14,7 @@ class SubscriberWorksService extends Service
         $query = SubscriberWork::select('*');
         $input = $request->all();
         if (count($input) > 0) {
+            $query = self::sorting($input, $query);
             $query = self::pagination($input, $query);
         }
         $subscribers = $query->get();

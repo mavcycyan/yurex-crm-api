@@ -15,6 +15,7 @@ class UsersService extends Service
         $query = User::select('*');
         $input = $request->all();
         if (count($input) > 0) {
+            $query = self::sorting($input, $query);
             $query = self::pagination($input, $query);
         }
         $users = $query->get();

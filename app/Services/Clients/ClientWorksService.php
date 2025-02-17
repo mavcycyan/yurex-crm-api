@@ -14,11 +14,14 @@ use Illuminate\Support\Facades\Validator;
 class ClientWorksService extends Service
 {
     public static function index(Request $request) {
-        $query = ClientWork::with('client');
+        $query = ClientWork::with('client')
+            ->join('clients', 'clients.id', '=', 'client_works.client_id');
         $input = $request->all();
         if (count($input) > 0) {
+            $query = self::sorting($input, $query);
             $query = self::pagination($input, $query);
         }
+        $query->select('client_works.*');
         $works = $query->get()
             ->map(function ($work) {
                 return [

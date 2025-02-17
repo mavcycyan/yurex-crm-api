@@ -12,6 +12,7 @@ class AdvocatesService extends Service
         $query = User::where('role_id', 4);
         $input = $request->all();
         if (count($input) > 0) {
+            $query = self::sorting($input, $query);
             $query = self::pagination($input, $query);
         }
         $users = $query->get();

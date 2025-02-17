@@ -14,6 +14,7 @@ class AdvocateWorksService extends Service
         $query = AdvocateWork::select('*');
         $input = $request->all();
         if (count($input) > 0) {
+            $query = self::sorting($input, $query);
             $query = self::pagination($input, $query);
         }
         $works = $query->get();

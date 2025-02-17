@@ -28,6 +28,7 @@ class AdvocateCasesService extends Service
                     ->where('advocate_category_id', $cat->id);
                 $input = $request->all();
                 if (count($input) > 0) {
+                    $query = self::sorting($input, $query);
                     $query = self::pagination($input, $query);
                 }
                 $cases = $query->get();
@@ -40,6 +41,7 @@ class AdvocateCasesService extends Service
             $query = AdvocateCase::select('*');
             $input = $request->all();
             if (count($input) > 0) {
+                $query = self::sorting($input, $query);
                 $query = self::pagination($input, $query);
             }
             $cases = $query->get();

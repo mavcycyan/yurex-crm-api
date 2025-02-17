@@ -14,6 +14,7 @@ class ClientsService extends Service
         $query = Client::select('*');
         $input = $request->all();
         if (count($input) > 0) {
+            $query = self::sorting($input, $query);
             $query = self::pagination($input, $query);
         }
         $clients = $query->get();

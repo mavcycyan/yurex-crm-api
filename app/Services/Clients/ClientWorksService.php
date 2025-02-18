@@ -18,6 +18,7 @@ class ClientWorksService extends Service
             ->join('clients', 'clients.id', '=', 'client_works.client_id');
         $input = $request->all();
         if (count($input) > 0) {
+            $query = self::filtering($input, $query);
             $query = self::sorting($input, $query);
             $query = self::pagination($input, $query);
         }
@@ -37,8 +38,11 @@ class ClientWorksService extends Service
                 ];
             });
 
-        $count = ClientWork::with('client')->get()
-            ->map(function ($work) {
+        $count_query = ClientWork::with('client');
+        if (count($input) > 0) {
+            $count_query = self::filtering($input, $count_query);
+        }
+        $count = $count_query->get()->map(function ($work) {
                 return [
                     'id' => $work->id,
                     'visit_date' => $work->visit_date,

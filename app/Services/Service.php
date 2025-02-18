@@ -51,4 +51,15 @@ class Service
         }
         return $query;
     }
+    public static function filtering($params, $query) {
+        if (count($params) > 0) {
+            foreach ($params as $key => $param) {
+                if (strpos($key, 'filt_') !== false) {
+                    $field_name = str_replace('filt_', '', $key);
+                    $query->where($field_name, '=', $param);
+                }
+            }
+        }
+        return $query;
+    }
 }

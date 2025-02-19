@@ -13,9 +13,10 @@ return new class extends Migration
     {
         Schema::create('fin_advocate_case_payments', function (Blueprint $table) {
             $table->id();
-            $table->date('date')->nullable();
+            $table->dateTime('date')->nullable();
             $table->decimal('amount')->nullable();
-            $table->unsignedBigInteger('price_id');
+            $table->string('amount_currency')->nullable();
+            $table->unsignedBigInteger('fin_advocate_case_price_id');
             $table->foreign('fin_advocate_case_price_id')->references('id')->on('fin_advocate_case_prices');
             $table->timestamps();
         });

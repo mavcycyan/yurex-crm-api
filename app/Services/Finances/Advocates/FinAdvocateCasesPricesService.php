@@ -7,6 +7,7 @@ use App\Models\Finance\Advocate\FinAdvocateCasePrice;
 use App\Services\Service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class FinAdvocateCasesPricesService extends Service
@@ -19,10 +20,17 @@ class FinAdvocateCasesPricesService extends Service
             $request['parent_id'] !== ''
         ) {
             $prices = FinAdvocateCasePrice::with('payments')
+            ->select('*')
             ->where('advocate_case_id', $request['parent_id'])
-            ->get();
+            ->get()->map(function ($item) {
+                    $item->deadlines = !empty($item->deadlines) ? unserialize($item->deadlines) : null;
+                    return $item;
+                });
         } else {
-            $prices = FinAdvocateCasePrice::all();
+            $prices = FinAdvocateCasePrice::all()->map(function ($item) {
+                $item->deadlines = !empty($item->deadlines) ? unserialize($item->deadlines) : null;
+                return $item;
+            });
         }
         return self::sendResponse($prices->toArray(), 'Prices and payments returned successfully');
     }
@@ -78,6 +86,12 @@ class FinAdvocateCasesPricesService extends Service
             if (count($prices) > 0) {
                 foreach ($prices as $price) {
                     $update = array('price' => $price['price']);
+                    if (isset($price['name'])) {
+                        $update['name'] = $price['name'];
+                    }
+                    if (isset($price['deadlines']) && $price['deadlines'] !== '') {
+                        $update['deadlines'] = serialize($price['deadlines']);
+                    }
                     if (count($price['payments']) > 0) {
                         $amounts = collect($price['payments'])->pluck('amount')->toArray();
                         $amount_sum = 0;
@@ -146,6 +160,12 @@ class FinAdvocateCasesPricesService extends Service
                         'price' => $price['price'],
                         'advocate_case_id' => $parent_id,
                     );
+                    if (isset($price['name'])) {
+                        $data_pr['name'] = $price['name'];
+                    }
+                    if (isset($price['deadlines']) && $price['deadlines'] !== '') {
+                        $data_pr['deadlines'] = serialize($price['deadlines']);
+                    }
                     if (count($price['payments']) > 0) {
                         $amounts = collect($price['payments'])->pluck('amount')->toArray();
                         $amount_sum = 0;
@@ -183,7 +203,10 @@ class FinAdvocateCasesPricesService extends Service
 
         $pr_db = FinAdvocateCasePrice::with('payments')
             ->where('advocate_case_id', $parent_id)
-            ->get();
+            ->get()->map(function ($item) {
+                $item->deadlines = !empty($item->deadlines) ? unserialize($item->deadlines) : null;
+                return $item;
+            });
         return self::sendResponse($pr_db->toArray(), 'Prices and payments updated successfully');
     }
 }

@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->date('date')->nullable();
             $table->decimal('amount')->nullable();
-            $table->unsignedBigInteger('price_id');
+            $table->unsignedBigInteger('fin_subscriber_price_id');
             $table->foreign('fin_subscriber_price_id')->references('id')->on('fin_subscriber_prices');
             $table->timestamps();
         });

@@ -16,6 +16,8 @@ return new class extends Migration
             $table->date('date')->nullable();
             $table->date('date_end')->nullable();
             $table->decimal('price')->nullable();
+            $table->string('name')->nullable();
+            $table->longText('deadlines')->nullable();
             $table->unsignedBigInteger('advocate_case_id');
             $table->foreign('advocate_case_id')->references('id')->on('advocate_cases');
             $table->timestamps();

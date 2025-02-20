@@ -11,7 +11,7 @@ class AdvocateWork extends Model
     use HasFactory;
 
     protected $fillable = [
-        'date', 'what_done', 'result', 'advocate_case_id'
+        'date', 'name', 'what_done', 'result', 'advocate_case_id'
     ];
 
     protected $casts = [

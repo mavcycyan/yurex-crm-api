@@ -3,6 +3,8 @@
 namespace App\Models\Advocate;
 
 use App\Models\Auth\User;
+use App\Models\Client\Client;
+use App\Models\Finance\Advocate\FinAdvocateCasePrice;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -13,7 +15,7 @@ class AdvocateCase extends Model
     use HasFactory;
 
     protected $fillable = [
-        'visit_date', 'advocates', 'proc_num', 'plot', 'fee', 'result', 'advocate_category_id', 'advocate_id'
+        'visit_date', 'advocates', 'proc_num', 'plot', 'fee', 'result', 'advocate_category_id', 'advocate_id', 'client_id'
     ];
 
     protected $casts = [
@@ -30,8 +32,18 @@ class AdvocateCase extends Model
         return $this->belongsTo(AdvocateCategory::class);
     }
 
+    public function client(): BelongsTo
+    {
+        return $this->belongsTo(Client::class);
+    }
+
     public function advocate_works(): HasMany
     {
         return $this->hasMany(AdvocateWork::class);
+    }
+
+    public function latestFinAdvocateCasePrice()
+    {
+        return $this->hasOne(FinAdvocateCasePrice::class, 'advocate_case_id')->latest('created_at');
     }
 }

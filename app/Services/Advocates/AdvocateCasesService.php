@@ -31,7 +31,22 @@ class AdvocateCasesService extends Service
                     $query = self::sorting($input, $query);
                     $query = self::pagination($input, $query);
                 }
-                $cases = $query->get();
+                $cases = $query->get()
+                    ->map(function ($work) {
+                        return [
+                            'id' => $work->id,
+                            'visit_date' => $work->visit_date,
+                            'advocates' => $work->advocates,
+                            'proc_num' => $work->proc_num,
+                            'plot' => $work->plot,
+                            'result' => $work->result,
+                            'fee' => $work->latestFinAdvocateCasePrice->price ?? null,
+                            'date_end' => $work->latestFinAdvocateCasePrice->date_end ?? null,
+                            'advocate_category_id' => $work->advocate_category_id,
+                            'advocate_id' => $work->advocate_id,
+                            'client_id' => $work->client_id,
+                        ];
+                    });
                 $count = AdvocateCase::where('advocate_id', $request['advocate_id'])
                     ->where('advocate_category_id', $cat->id)->get()->count();
             } else {
@@ -44,7 +59,22 @@ class AdvocateCasesService extends Service
                 $query = self::sorting($input, $query);
                 $query = self::pagination($input, $query);
             }
-            $cases = $query->get();
+            $cases = $query->get()
+                ->map(function ($work) {
+                    return [
+                        'id' => $work->id,
+                        'visit_date' => $work->visit_date,
+                        'advocates' => $work->advocates,
+                        'proc_num' => $work->proc_num,
+                        'plot' => $work->plot,
+                        'result' => $work->result,
+                        'fee' => $work->latestFinAdvocateCasePrice->price ?? null,
+                        'date_end' => $work->latestFinAdvocateCasePrice->date_end ?? null,
+                        'advocate_category_id' => $work->advocate_category_id,
+                        'advocate_id' => $work->advocate_id,
+                        'client_id' => $work->client_id,
+                    ];
+                });;
             $count = AdvocateCase::select('*')->get()->count();
         }
         return self::sendResponse($cases->toArray(), 'Advocate cases returned successfully', $count);
@@ -119,6 +149,7 @@ class AdvocateCasesService extends Service
         $case->fee = $input['fee'];
         $case->result = $input['result'];
         $case->advocate_category_id = $input['advocate_category_id'];
+        $case->client_id = $input['client_id'];
 
         $case->save();
 

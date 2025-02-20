@@ -18,12 +18,13 @@ return new class extends Migration
             $table->string('proc_num')->nullable();
             $table->text('plot')->nullable();
             $table->decimal('fee')->nullable();
-//            $table->text('pays')->nullable();
             $table->string('result')->nullable();
             $table->unsignedBigInteger('advocate_category_id')->nullable();
             $table->unsignedBigInteger('advocate_id')->nullable();
+            $table->unsignedBigInteger('client_id')->nullable();
             $table->foreign('advocate_category_id')->references('id')->on('advocate_categories')->onDelete('set null');
             $table->foreign('advocate_id')->references('id')->on('users')->onDelete('set null');
+            $table->foreign('client_id')->references('id')->on('clients')->onDelete('set null');
             $table->timestamps();
         });
     }

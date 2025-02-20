@@ -15,6 +15,7 @@ return new class extends Migration
         Schema::create('advocate_works', function (Blueprint $table) {
             $table->id();
             $table->date('date');
+            $table->string('name')->nullable();
             $table->longText('what_done')->nullable();
             $table->string('result')->nullable();
             $table->unsignedBigInteger('advocate_case_id');

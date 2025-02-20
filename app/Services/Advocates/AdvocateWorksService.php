@@ -67,6 +67,7 @@ class AdvocateWorksService extends Service
         }
 
         $work->date = Carbon::createFromFormat('Y-m-d', $input['date']);
+        $work->name = $input['name'];
         $work->what_done = $input['what_done'];
         $work->result = $input['result'];
         $work->advocate_case_id = $input['advocate_case_id'];

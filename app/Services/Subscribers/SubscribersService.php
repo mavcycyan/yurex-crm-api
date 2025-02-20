@@ -21,7 +21,23 @@ class SubscribersService extends Service
             $query = self::sorting($input, $query);
             $query = self::pagination($input, $query);
         }
-        $subscribers = $query->get();
+        $subscribers = $query->get()
+            ->map(function ($work) {
+                return [
+                    'id' => $work->id,
+                    'name' => $work->name,
+                    'edrpou' => $work->edrpou,
+                    'contract_date' => $work->contract_date,
+                    'contact_person_name' => $work->contact_person_name,
+                    'contact_person_phone' => $work->contact_person_phone,
+                    'director_person_name' => $work->director_person_name,
+                    'director_person_phone' => $work->director_person_phone,
+                    'legal_address' => $work->legal_address,
+                    'actual_address' => $work->actual_address,
+                    'fee' => $work->latestFinSubscriberPrice->price ?? null,
+                    'date_end' => $work->latestFinSubscriberPrice->date_end ?? null,
+                ];
+            });
         $count = Subscriber::select('*')->get()->count();
         return self::sendResponse($subscribers->toArray(), 'Subscribers returned successfully', $count);
     }
@@ -33,8 +49,10 @@ class SubscribersService extends Service
             $res->subscriber_works = $subscriber->subscriber_works->map(function ($item) {
                 $item->what_done = unserialize($item->what_done);
                 return $item;
-            });;
+            });
         }
+        $res->fee = $res->latestFinSubscriberPrice->price ?? null;
+        $res->date_end = $res->latestFinSubscriberPrice->date_end ?? null;
         return self::sendResponse($res, 'Subscriber "' . $subscriber->name . '" returned successfully');
     }
 

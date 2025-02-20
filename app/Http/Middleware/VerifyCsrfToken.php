@@ -42,6 +42,9 @@ class VerifyCsrfToken extends Middleware
         'api/fin/subscribers/prices',
         'api/fin/subscribers/prices_bulk_update',
 
+        'api/fin/subscriberworks/prices',
+        'api/fin/subscriberworks/prices_bulk_update',
+
         'api/fin/advocatecases/prices',
         'api/fin/advocatecases/prices_bulk_update',
 

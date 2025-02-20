@@ -4,7 +4,7 @@ namespace App\Services\Subscribers;
 
 use App\Models\Subscriber\SubscriberWork;
 use App\Services\Finances\Subscribers\FinSubscrWorksPaymentsService;
-use App\Services\Finances\Subscribers\FinSubscriberWorksPricesService;
+use App\Services\Finances\Subscribers\FinSubscrWorksPricesService;
 use App\Services\Service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -13,13 +13,28 @@ use Illuminate\Support\Facades\Validator;
 class SubscriberWorksService extends Service
 {
     public static function index(Request $request) {
-        $query = SubscriberWork::select('*');
+        $input = $request->all();
+        if (!isset($input['subscriber_id']) || $input['subscriber_id'] === '') {
+            return self::sendError('No subscriber_id sent');
+        }
+        $query = SubscriberWork::select('*')
+            ->where('subscriber_id', '=', $input['subscriber_id']);
         $input = $request->all();
         if (count($input) > 0) {
             $query = self::sorting($input, $query);
             $query = self::pagination($input, $query);
         }
-        $subscribers = $query->get();
+        $subscribers = $query->get()->map(function ($work) {
+            return [
+                'id' => $work->id,
+                'date' => $work->date,
+                'name' => $work->name,
+                'result' => $work->result,
+                'fee' => $work->latestFinSubscrWorkPrice->price ?? null,
+                'date_end' => $work->latestFinSubscrWorkPrice->date_end ?? null,
+                'subscriber_id' => $work->subscriber_id,
+            ];
+        });
         $count = SubscriberWork::select('*')->get()->count();
         return self::sendResponse($subscribers->toArray(), 'Subscriber works returned successfully', $count);
     }
@@ -27,6 +42,8 @@ class SubscriberWorksService extends Service
     public static function show($id, Request $request) {
         $work = SubscriberWork::find($id);
         $work->what_done = unserialize($work->what_done);
+        $work->fee = $work->latestFinSubscrWorkPrice->price ?? null;
+        $work->date_end = $work->latestFinSubscrWorkPrice->date_end ?? null;
         return self::sendResponse($work, 'Subscriber work returned successfully');
     }
 
@@ -54,7 +71,7 @@ class SubscriberWorksService extends Service
             if ($input['payment'] !== '' && $input['payment'] >= $fee) {
                 $for_save['date_end'] = Carbon::createFromFormat('Y-m-d', date('Y-m-d'));
             }
-            $price = FinSubscriberWorksPricesService::save_new($for_save);
+            $price = FinSubscrWorksPricesService::save_new($for_save);
 
             if (isset($input['payment']) && $price !== false) {
                 $fee = ($input['payment'] !== '') ? $input['payment'] : 0;
@@ -84,6 +101,7 @@ class SubscriberWorksService extends Service
         }
 
         $work->date = Carbon::createFromFormat('Y-m-d', $input['date']);
+        $work->name = $input['name'];
         $work->what_done = $input['what_done'];
         $work->result = $input['result'];
         $work->subscriber_id = $input['subscriber_id'];

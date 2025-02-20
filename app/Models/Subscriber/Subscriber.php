@@ -2,6 +2,7 @@
 
 namespace App\Models\Subscriber;
 
+use App\Models\Finance\Subscriber\FinSubscriberPrice;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -17,5 +18,10 @@ class Subscriber extends Model
     public function subscriber_works(): HasMany
     {
         return $this->hasMany(SubscriberWork::class);
+    }
+
+    public function latestFinSubscriberPrice()
+    {
+        return $this->hasOne(FinSubscriberPrice::class, 'subscriber_id')->latest('created_at');
     }
 }

@@ -2,6 +2,8 @@
 
 namespace App\Models\Subscriber;
 
+use App\Models\Finance\Client\FinClientWorkPrice;
+use App\Models\Finance\Subscriber\FinSubscrWorkPrice;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -11,7 +13,7 @@ class SubscriberWork extends Model
     use HasFactory;
 
     protected $fillable = [
-        'date', 'what_done', 'result', 'subscriber_id'
+        'date', 'name', 'what_done', 'result', 'subscriber_id'
     ];
 
     protected $casts = [
@@ -21,5 +23,10 @@ class SubscriberWork extends Model
     public function subscriber(): BelongsTo
     {
         return $this->belongsTo(Subscriber::class);
+    }
+
+    public function latestFinSubscrWorkPrice()
+    {
+        return $this->hasOne(FinSubscrWorkPrice::class, 'subscriber_work_id')->latest('created_at');
     }
 }

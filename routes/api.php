@@ -8,6 +8,7 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Clients\ClientsController;
 use App\Http\Controllers\Clients\ClientWorksController;
 use App\Http\Controllers\Finances\Advocates\FinAdvocateCasesPrices;
+use App\Http\Controllers\Finances\Clients\FinClientWorksPrices;
 use App\Http\Controllers\Finances\Subscribers\FinSubscribersPrices;
 use App\Http\Controllers\Finances\Subscribers\FinSubscrWorksPrices;
 use App\Http\Controllers\Subscribers\SubscribersController;

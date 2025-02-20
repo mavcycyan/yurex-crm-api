@@ -33,7 +33,8 @@ class ClientWorksService extends Service
                     'full_name' => $work->client->full_name,
                     'phone' => $work->client->phone,
                     'result' => $work->result,
-                    'fee' => $work->fee,
+                    'fee' => $work->latestFinClientWorkPrice->price ?? null,
+                    'date_end' => $work->latestFinClientWorkPrice->date_end ?? null,
                     'client_id' => $work->client_id,
                 ];
             });
@@ -45,14 +46,6 @@ class ClientWorksService extends Service
         $count = $count_query->get()->map(function ($work) {
                 return [
                     'id' => $work->id,
-                    'visit_date' => $work->visit_date,
-                    'visit_purpose' => $work->visit_purpose,
-                    'where_knows' => $work->client->where_knows,
-                    'full_name' => $work->client->full_name,
-                    'phone' => $work->client->phone,
-                    'result' => $work->result,
-                    'fee' => $work->fee,
-                    'client_id' => $work->client_id,
                 ];
             })->count();
         return self::sendResponse($works->toArray(), 'Client works returned successfully', $count);
@@ -69,7 +62,17 @@ class ClientWorksService extends Service
             $query = self::sorting($input, $query);
             $query = self::pagination($input, $query);
         }
-        $works = $query->get();
+        $works = $query->get()->map(function ($work) {
+            return [
+                'id' => $work->id,
+                'visit_date' => $work->visit_date,
+                'visit_purpose' => $work->visit_purpose,
+                'result' => $work->result,
+                'fee' => $work->latestFinClientWorkPrice->price ?? null,
+                'date_end' => $work->latestFinClientWorkPrice->date_end ?? null,
+                'client_id' => $work->client_id,
+            ];
+        });
 
         $count_query = ClientWork::where('client_id', '=', $input['client_id']);
         if (count($input) > 0) {
@@ -82,6 +85,8 @@ class ClientWorksService extends Service
     public static function show($id, Request $request) {
         $work = ClientWork::find($id);
         $work->what_done = unserialize($work->what_done);
+        $work->fee = $work->latestFinClientWorkPrice->price ?? null;
+        $work->date_end = $work->latestFinClientWorkPrice->date_end ?? null;
         return self::sendResponse($work, 'Client work returned successfully');
     }
 

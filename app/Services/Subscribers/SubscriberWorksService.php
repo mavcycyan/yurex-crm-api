@@ -3,6 +3,8 @@
 namespace App\Services\Subscribers;
 
 use App\Models\Subscriber\SubscriberWork;
+use App\Services\Finances\Subscribers\FinSubscrWorksPaymentsService;
+use App\Services\Finances\Subscribers\FinSubscriberWorksPricesService;
 use App\Services\Service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -45,6 +47,21 @@ class SubscriberWorksService extends Service
         }
         $input['date'] = Carbon::createFromFormat('Y-m-d', $input['date']);
         $work = SubscriberWork::create($input);
+
+        if (isset($input['fee'])) {
+            $fee = ($input['fee'] !== '') ? $input['fee'] : 0;
+            $for_save = array('date' => $input['date'], 'price' => $fee, 'subscriber_id' => $work->id);
+            if ($input['payment'] !== '' && $input['payment'] >= $fee) {
+                $for_save['date_end'] = Carbon::createFromFormat('Y-m-d', date('Y-m-d'));
+            }
+            $price = FinSubscriberWorksPricesService::save_new($for_save);
+
+            if (isset($input['payment']) && $price !== false) {
+                $fee = ($input['payment'] !== '') ? $input['payment'] : 0;
+                $payment = FinSubscrWorksPaymentsService::save_new(array('date' => $input['date'], 'amount' => $fee, 'fin_subscriber_work_price_id' => $price->id));
+            }
+        }
+
         return self::sendResponse($work, 'Subscriber work created successfully');
     }
 

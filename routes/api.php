@@ -8,8 +8,8 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Clients\ClientsController;
 use App\Http\Controllers\Clients\ClientWorksController;
 use App\Http\Controllers\Finances\Advocates\FinAdvocateCasesPrices;
-use App\Http\Controllers\Finances\Clients\FinClientWorksPrices;
 use App\Http\Controllers\Finances\Subscribers\FinSubscribersPrices;
+use App\Http\Controllers\Finances\Subscribers\FinSubscrWorksPrices;
 use App\Http\Controllers\Subscribers\SubscribersController;
 use App\Http\Controllers\Subscribers\SubscriberWorksController;
 use App\Http\Controllers\Users\UsersController;
@@ -88,6 +88,12 @@ Route::middleware(['auth:sanctum'])->group(function () {
         'edit', 'create'
     ]);
     Route::put('/fin/subscribers/prices_bulk_update', [FinSubscribersPrices::class, 'bulk_update']);
+});
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::resource('/fin/subscriberworks/prices', FinSubscrWorksPrices::class)->except([
+        'edit', 'create'
+    ]);
+    Route::put('/fin/subscriberworks/prices_bulk_update', [FinSubscrWorksPrices::class, 'bulk_update']);
 });
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::resource('/fin/advocatecases/prices', FinAdvocateCasesPrices::class)->except([

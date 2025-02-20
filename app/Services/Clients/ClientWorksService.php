@@ -58,8 +58,25 @@ class ClientWorksService extends Service
         return self::sendResponse($works->toArray(), 'Client works returned successfully', $count);
     }
     public static function get_by_client(Request $request) {
-        $clients = ClientWork::all();
-        return self::sendResponse($clients->toArray(), 'Client works returned successfully');
+        $input = $request->all();
+        if (!isset($input['client_id']) || $input['client_id'] === '') {
+            return self::sendError('No client_id sent');
+        }
+        $query = ClientWork::select('*')
+            ->where('client_id', '=', $input['client_id']);
+        if (count($input) > 0) {
+            $query = self::filtering($input, $query);
+            $query = self::sorting($input, $query);
+            $query = self::pagination($input, $query);
+        }
+        $works = $query->get();
+
+        $count_query = ClientWork::where('client_id', '=', $input['client_id']);
+        if (count($input) > 0) {
+            $count_query = self::filtering($input, $count_query);
+        }
+        $count = $count_query->get()->count();
+        return self::sendResponse($works->toArray(), 'Client works returned successfully', $count);
     }
 
     public static function show($id, Request $request) {

@@ -46,6 +46,7 @@ Route::middleware(['auth:sanctum', 'role:root,director,lawyer'])->group(function
     Route::resource('/client_works', ClientWorksController::class)->except([
         'edit', 'create'
     ]);
+    Route::get('/client_works_list', [ClientWorksController::class, 'get_by_client']);
 });
 
 //subscribers routes

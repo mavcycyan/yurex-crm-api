@@ -12,6 +12,9 @@ class ClientWorksController extends Controller
     public function index(Request $request) {
         return ClientWorksService::index($request);
     }
+    public function get_by_client(Request $request) {
+        return ClientWorksService::get_by_client($request);
+    }
     public function show($id, Request $request) {
         return ClientWorksService::show($id, $request);
     }

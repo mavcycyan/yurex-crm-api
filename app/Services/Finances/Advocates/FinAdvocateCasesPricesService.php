@@ -119,8 +119,20 @@ class FinAdvocateCasesPricesService extends Service
                         }
                         if (count($payments) > 0) {
                             foreach ($payments as $pay) {
+                                $amount_currency = '';
+                                $amount_currency_val = '';
+                                if (isset($pay['amount_currency']) && $pay['amount_currency'] !== null && $pay['amount_currency'] !== '') {
+                                    $amount_currency = $pay['amount_currency'];
+                                }
+                                if (isset($pay['amount_currency_val']) && $pay['amount_currency_val'] !== null && $pay['amount_currency_val'] !== '') {
+                                    $amount_currency_val = $pay['amount_currency_val'];
+                                }
+                                $params = ['date' => $pay['date'], 'amount' => $pay['amount']];
+                                if ($amount_currency !== '' && $amount_currency_val !== '') {
+                                    $params['amount_currency'] = $amount_currency . ' ' . $amount_currency_val;
+                                }
                                 FinAdvocateCasePayment::where('id', $pay['id'])
-                                    ->update(['date' => $pay['date'], 'amount' => $pay['amount']]);
+                                    ->update($params);
                             }
                             $p_ids = collect($payments)->pluck('id')->toArray();
                             FinAdvocateCasePayment::whereNotIn('id', $p_ids)
@@ -135,6 +147,17 @@ class FinAdvocateCasesPricesService extends Service
                                     'amount' => $pay['amount'],
                                     'fin_advocate_case_price_id' => $price['id'],
                                 );
+                                $amount_currency = '';
+                                $amount_currency_val = '';
+                                if (isset($pay['amount_currency']) && $pay['amount_currency'] !== null && $pay['amount_currency'] !== '') {
+                                    $amount_currency = $pay['amount_currency'];
+                                }
+                                if (isset($pay['amount_currency_val']) && $pay['amount_currency_val'] !== null && $pay['amount_currency_val'] !== '') {
+                                    $amount_currency_val = $pay['amount_currency_val'];
+                                }
+                                if ($amount_currency !== '' && $amount_currency_val !== '') {
+                                    $data['amount_currency'] = $amount_currency . ' ' . $amount_currency_val;
+                                }
                                 FinAdvocateCasePayment::create($data);
                             }
                         }
@@ -186,6 +209,17 @@ class FinAdvocateCasesPricesService extends Service
                                 'amount' => $pay['amount'],
                                 'fin_advocate_case_price_id' => $new_pr->id,
                             );
+                            $amount_currency = '';
+                            $amount_currency_val = '';
+                            if (isset($pay['amount_currency']) && $pay['amount_currency'] !== null && $pay['amount_currency'] !== '') {
+                                $amount_currency = $pay['amount_currency'];
+                            }
+                            if (isset($pay['amount_currency_val']) && $pay['amount_currency_val'] !== null && $pay['amount_currency_val'] !== '') {
+                                $amount_currency_val = $pay['amount_currency_val'];
+                            }
+                            if ($amount_currency !== '' && $amount_currency_val !== '') {
+                                $data['amount_currency'] = $amount_currency . ' ' . $amount_currency_val;
+                            }
                             FinAdvocateCasePayment::create($data);
                         }
                     }

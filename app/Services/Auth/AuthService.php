@@ -41,7 +41,7 @@ class AuthService extends Service
             'role_id' => $input['role_id'],
         ]);
 
-        return response()->json(['user' => $user, 'message' => 'User registered successfully'], 201);
+        return response()->json(['success' => true, 'data' => $user, 'message' => 'User registered successfully'], 201);
     }
 
     public static function login(Request $request)

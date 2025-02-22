@@ -34,7 +34,7 @@ class FinClientWorksPaymentsService extends Service
 
     public static function save_new($input) {
         $validator = Validator::make($input, [
-            'price_id' => 'required'
+            'fin_client_work_price_id' => 'required'
         ]);
 
         if ($validator->fails()) {

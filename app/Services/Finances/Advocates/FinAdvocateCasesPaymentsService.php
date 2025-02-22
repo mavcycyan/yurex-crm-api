@@ -40,7 +40,6 @@ class FinAdvocateCasesPaymentsService extends Service
             return false;
         }
 
-        $input['date'] = Carbon::createFromFormat('Y-m-d H:i:s', $input['date']);
         $payment = FinAdvocateCasePayment::create($input);
         return $payment;
     }

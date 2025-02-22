@@ -13,12 +13,19 @@ class AdvocateWorksService extends Service
     public static function index(Request $request) {
         $query = AdvocateWork::select('*');
         $input = $request->all();
+        if (isset($input['case_id']) && $input['case_id'] !== '') {
+            $query->where('advocate_case_id', '=', $input['case_id']);
+        }
         if (count($input) > 0) {
             $query = self::sorting($input, $query);
             $query = self::pagination($input, $query);
         }
         $works = $query->get();
-        $count = AdvocateWork::select('*')->get()->count();
+        $query_count = AdvocateWork::select('*');
+        if (isset($input['case_id']) && $input['case_id'] !== '') {
+            $query_count->where('advocate_case_id', '=', $input['case_id']);
+        }
+        $count = $query_count->get()->count();
         return self::sendResponse($works->toArray(), 'Advocate works returned successfully', $count);
     }
 

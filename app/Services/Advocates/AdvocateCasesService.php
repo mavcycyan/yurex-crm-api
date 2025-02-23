@@ -4,6 +4,7 @@ namespace App\Services\Advocates;
 
 use App\Models\Advocate\AdvocateCase;
 use App\Models\Advocate\AdvocateCategory;
+use App\Models\Client\Client;
 use App\Models\Finance\Advocate\FinAdvocateCasePayment;
 use App\Models\Finance\Advocate\FinAdvocateCasePrice;
 use App\Services\Finances\Advocates\FinAdvocateCasesPaymentsService;
@@ -183,5 +184,14 @@ class AdvocateCasesService extends Service
         $case->delete();
 
         return response()->json(['success' => true,'message' => 'Case deleted successfully.'], 200);
+    }
+    public static function get_client_case($id) {
+        $case = AdvocateCase::find($id);
+        $res = array('client' => array(), 'case' => $case);
+        $res['case']->fee = $case->latestFinAdvocateCasePrice->price ?? null;
+        if ($case->client_id !== null) {
+            $res['client'] = Client::find($case->client_id);
+        }
+        return self::sendResponse($res, 'Advocate case "' . $case->plot . '" returned successfully');
     }
 }

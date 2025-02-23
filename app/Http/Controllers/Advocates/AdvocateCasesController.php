@@ -23,4 +23,7 @@ class AdvocateCasesController extends Controller
     public function destroy($id) {
         return AdvocateCasesService::destroy($id);
     }
+    public function get_client_case($id) {
+        return AdvocateCasesService::get_client_case($id);
+    }
 }

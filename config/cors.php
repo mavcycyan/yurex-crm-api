@@ -19,7 +19,7 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['*'],
+    'allowed_origins' => ['*', 'http://crm.yurex.com.ua', 'http://yurex.com.ua'],
 
     'allowed_origins_patterns' => [],
 

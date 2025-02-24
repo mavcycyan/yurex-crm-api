@@ -35,14 +35,14 @@ class FinSubscrWorksPaymentsService extends Service
 
     public static function save_new($input) {
         $validator = Validator::make($input, [
-            'fin_subscriber_work_price_id' => 'required'
+            'fin_subscr_work_price_id' => 'required'
         ]);
 
         if ($validator->fails()) {
             return false;
         }
 
-        $input['date'] = Carbon::createFromFormat('Y-m-d', $input['date']);
+//        $input['date'] = Carbon::createFromFormat('Y-m-d', $input['date']);
         $payment = FinSubscrWorkPayment::create($input);
         return $payment;
     }

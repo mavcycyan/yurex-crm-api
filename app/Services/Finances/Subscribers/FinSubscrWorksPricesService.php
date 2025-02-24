@@ -8,6 +8,7 @@ use App\Models\Subscriber\Subscriber;
 use App\Services\Service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class FinSubscrWorksPricesService extends Service
@@ -55,7 +56,7 @@ class FinSubscrWorksPricesService extends Service
             return false;
         }
 
-        $input['date'] = Carbon::createFromFormat('Y-m-d', $input['date']);
+//        $input['date'] = Carbon::createFromFormat('Y-m-d', $input['date']);
         $input['date_end'] = null;
         $payment = FinSubscrWorkPrice::create($input);
         return $payment;

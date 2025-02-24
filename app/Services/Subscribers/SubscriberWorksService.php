@@ -2,12 +2,14 @@
 
 namespace App\Services\Subscribers;
 
+use App\Models\Finance\Subscriber\FinSubscrWorkPrice;
 use App\Models\Subscriber\SubscriberWork;
 use App\Services\Finances\Subscribers\FinSubscrWorksPaymentsService;
 use App\Services\Finances\Subscribers\FinSubscrWorksPricesService;
 use App\Services\Service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class SubscriberWorksService extends Service
@@ -67,7 +69,7 @@ class SubscriberWorksService extends Service
 
         if (isset($input['fee'])) {
             $fee = ($input['fee'] !== '') ? $input['fee'] : 0;
-            $for_save = array('date' => $input['date'], 'price' => $fee, 'subscriber_id' => $work->id);
+            $for_save = array('date' => $input['date'], 'price' => $fee, 'subscriber_work_id' => $work->id);
             if ($input['payment'] !== '' && $input['payment'] >= $fee) {
                 $for_save['date_end'] = Carbon::createFromFormat('Y-m-d', date('Y-m-d'));
             }
@@ -75,7 +77,7 @@ class SubscriberWorksService extends Service
 
             if (isset($input['payment']) && $price !== false) {
                 $fee = ($input['payment'] !== '') ? $input['payment'] : 0;
-                $payment = FinSubscrWorksPaymentsService::save_new(array('date' => $input['date'], 'amount' => $fee, 'fin_subscriber_work_price_id' => $price->id));
+                $payment = FinSubscrWorksPaymentsService::save_new(array('date' => $input['date'], 'amount' => $fee, 'fin_subscr_work_price_id' => $price->id));
             }
         }
 
@@ -113,6 +115,12 @@ class SubscriberWorksService extends Service
 
     public static function destroy($id) {
         $work = SubscriberWork::find($id);
+
+        FinSubscrWorkPrice::where('subscriber_work_id', $id)
+            ->each(function ($price_item) {
+                $price_item->payments()->delete();
+                $price_item->delete();
+            });
 
         if (!$work) {
             return self::sendError('Subscriber work not found.');

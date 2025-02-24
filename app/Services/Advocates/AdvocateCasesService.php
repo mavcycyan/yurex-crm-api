@@ -153,6 +153,7 @@ class AdvocateCasesService extends Service
         $case->advocates = $input['advocates'];
         $case->proc_num = $input['proc_num'];
         $case->plot = $input['plot'];
+        $case->plot_big = $input['plot_big'];
         $case->fee = $input['fee'];
         $case->result = $input['result'];
         $case->advocate_category_id = $input['advocate_category_id'];

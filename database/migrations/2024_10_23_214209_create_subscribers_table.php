@@ -23,8 +23,7 @@ return new class extends Migration
             $table->string('director_person_phone')->nullable();
             $table->string('legal_address')->nullable();
             $table->string('actual_address')->nullable();
-//            $table->string('last_pay_date'); get from another table
-//            $table->string('fee'); get from another table
+            $table->string('holder')->nullable();
             $table->text('info')->nullable();
             $table->foreign('responsible_person_id')->references('id')->on('users');
             $table->timestamps();

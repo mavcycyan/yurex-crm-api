@@ -17,7 +17,6 @@ return new class extends Migration
             $table->string('visit_purpose');
             $table->longText('what_done')->nullable();
             $table->string('result')->nullable();
-            $table->decimal('fee')->nullable();
             $table->unsignedBigInteger('client_id');
             $table->foreign('client_id')->references('id')->on('clients');
             $table->timestamps();

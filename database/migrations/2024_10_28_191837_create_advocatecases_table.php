@@ -17,7 +17,6 @@ return new class extends Migration
             $table->text('advocates')->nullable();
             $table->string('proc_num')->nullable();
             $table->text('plot')->nullable();
-            $table->decimal('fee')->nullable();
             $table->string('result')->nullable();
             $table->text('plot_big')->nullable();
             $table->unsignedBigInteger('advocate_category_id')->nullable();

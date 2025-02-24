@@ -148,7 +148,6 @@ class ClientWorksService extends Service
         $work->visit_purpose = $input['visit_purpose'];
         $work->what_done = $input['what_done'];
         $work->result = $input['result'];
-        $work->fee = $input['fee'];
         $work->client_id = $input['client_id'];
 
         $work->save();

@@ -16,8 +16,8 @@ class RoleSeeder extends Seeder
         DB::table('roles')->insert([
             ['name' => 'root', 'title' => 'Суперадмін', 'created_at' => now(), 'updated_at' => now()],
             ['name' => 'director', 'title' => 'Керівник', 'created_at' => now(), 'updated_at' => now()],
-            ['name' => 'advocate', 'title' => 'Адвокат', 'created_at' => now(), 'updated_at' => now()],
             ['name' => 'lawyer', 'title' => 'Юрист', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'advocate', 'title' => 'Адвокат', 'created_at' => now(), 'updated_at' => now()],
         ]);
     }
 }

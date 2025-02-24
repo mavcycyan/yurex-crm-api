@@ -77,6 +77,7 @@ Route::middleware(['auth:sanctum', 'role:root,director,advocate'])->group(functi
         'edit', 'create'
     ]);
     Route::get('/get_client_case/{id}', [AdvocateCasesController::class, 'get_client_case']);
+    Route::get('/advocate_clients', [ClientsController::class, 'index']);
 });
 
 //finance routes

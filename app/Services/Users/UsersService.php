@@ -42,7 +42,7 @@ class UsersService extends Service
 
         $user->name = $input['name'];
         $user->email = $input['email'];
-        $user->birthday = Carbon::createFromFormat('Y-m-d', $input['birthday']);
+        $user->birthday = $input['birthday'];
         $user->address = $input['address'];
         $user->phone = $input['phone'];
         $user->role_id = $input['role_id'];

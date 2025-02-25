@@ -41,7 +41,7 @@ class FinClientWorksPaymentsService extends Service
             return false;
         }
 
-        $input['date'] = Carbon::createFromFormat('Y-m-d', $input['date']);
+        $input['date'] = $input['date'];
         $payment = FinClientWorkPayment::create($input);
         return $payment;
     }

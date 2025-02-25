@@ -72,7 +72,7 @@ class SubscribersService extends Service
             $fee = ($input['fee'] !== '') ? $input['fee'] : 0;
             $for_save = array('date' => $input['contract_date'], 'price' => $fee, 'subscriber_id' => $subscriber->id);
             if ($input['payment'] !== '' && $input['payment'] >= $fee) {
-                $for_save['date_end'] = Carbon::createFromFormat('Y-m-d', date('Y-m-d'));
+                $for_save['date_end'] = date('Y-m-d');
             }
             $price = FinSubscribersPricesService::save_new($for_save);
 

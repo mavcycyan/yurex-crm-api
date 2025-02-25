@@ -50,7 +50,7 @@ class AdvocateWorksService extends Service
         if (isset($input['what_done']) && $input['what_done'] !== '') {
             $input['what_done'] = serialize($input['what_done']);
         }
-        $input['date'] = Carbon::createFromFormat('Y-m-d', $input['date']);
+        $input['date'] = $input['date'];
         $work = AdvocateWork::create($input);
         return self::sendResponse($work, 'Advocate work created successfully');
     }
@@ -73,7 +73,7 @@ class AdvocateWorksService extends Service
             $input['what_done'] = serialize($input['what_done']);
         }
 
-        $work->date = Carbon::createFromFormat('Y-m-d', $input['date']);
+        $work->date = $input['date'];
         $work->name = $input['name'];
         $work->what_done = $input['what_done'];
         $work->result = $input['result'];

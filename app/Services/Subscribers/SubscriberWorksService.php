@@ -64,14 +64,14 @@ class SubscriberWorksService extends Service
         if (isset($input['what_done']) && $input['what_done'] !== '') {
             $input['what_done'] = serialize($input['what_done']);
         }
-        $input['date'] = Carbon::createFromFormat('Y-m-d', $input['date']);
+//        $input['date'] = Carbon::createFromFormat('Y-m-d', $input['date']);
         $work = SubscriberWork::create($input);
 
         if (isset($input['fee'])) {
             $fee = ($input['fee'] !== '') ? $input['fee'] : 0;
             $for_save = array('date' => $input['date'], 'price' => $fee, 'subscriber_work_id' => $work->id);
             if ($input['payment'] !== '' && $input['payment'] >= $fee) {
-                $for_save['date_end'] = Carbon::createFromFormat('Y-m-d', date('Y-m-d'));
+                $for_save['date_end'] = date('Y-m-d');
             }
             $price = FinSubscrWorksPricesService::save_new($for_save);
 
@@ -102,7 +102,7 @@ class SubscriberWorksService extends Service
             $input['what_done'] = serialize($input['what_done']);
         }
 
-        $work->date = Carbon::createFromFormat('Y-m-d', $input['date']);
+        $work->date = $input['date'];
         $work->name = $input['name'];
         $work->what_done = $input['what_done'];
         $work->result = $input['result'];

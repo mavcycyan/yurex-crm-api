@@ -87,7 +87,7 @@ class FinSubscrWorksPricesService extends Service
                             $amount_sum += (int) $amount;
                         }
                         if ($amount_sum >= $price['price']) {
-                            $update['date_end'] = Carbon::createFromFormat('Y-m-d', date('Y-m-d'));
+                            $update['date_end'] = date('Y-m-d');
                         }
                     }
                     FinSubscrWorkPrice::where('id', $price['id'])
@@ -144,7 +144,7 @@ class FinSubscrWorksPricesService extends Service
             if (count($prices_null) > 0) {
                 foreach ($prices_null as $price) {
                     $data_pr = array(
-                        'date' => Carbon::createFromFormat('Y-m-d', date('Y-m-d')),
+                        'date' => date('Y-m-d'),
                         'price' => $price['price'],
                         'subscriber_work_id' => $subscriber_work_id,
                     );
@@ -155,7 +155,7 @@ class FinSubscrWorksPricesService extends Service
                             $amount_sum += (int) $amount;
                         }
                         if ($amount_sum >= $price['price']) {
-                            $data_pr['date_end'] = Carbon::createFromFormat('Y-m-d', date('Y-m-d'));
+                            $data_pr['date_end'] = date('Y-m-d');
                         }
                     }
                     $new_pr = FinSubscrWorkPrice::create($data_pr);

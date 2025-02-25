@@ -154,7 +154,7 @@ class AdvocateCasesService extends Service
             $fee = ($input['fee'] !== '') ? $input['fee'] : 0;
             $for_save = array('date' => $input['visit_date'], 'price' => $fee, 'advocate_case_id' => $case->id);
             if ($input['payment'] !== '' && $input['payment'] >= $fee) {
-                $for_save['date_end'] = Carbon::createFromFormat('Y-m-d', date('Y-m-d'));
+                $for_save['date_end'] = date('Y-m-d');
             }
             $price = FinAdvocateCasesPricesService::save_new($for_save);
 
@@ -183,7 +183,7 @@ class AdvocateCasesService extends Service
             $input['advocates'] = serialize($input['advocates']);
         }
 
-        $case->visit_date = Carbon::createFromFormat('Y-m-d', $input['visit_date']);
+        $case->visit_date = $input['visit_date'];
         $case->advocates = $input['advocates'];
         $case->proc_num = $input['proc_num'];
         $case->plot = $input['plot'];

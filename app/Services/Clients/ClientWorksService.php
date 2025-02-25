@@ -112,7 +112,7 @@ class ClientWorksService extends Service
             $fee = ($input['fee'] !== '') ? $input['fee'] : 0;
             $for_save = array('date' => $input['visit_date'], 'price' => $fee, 'client_work_id' => $work->id);
             if ($input['payment'] !== '' && $input['payment'] >= $fee) {
-                $for_save['date_end'] = Carbon::createFromFormat('Y-m-d', date('Y-m-d'));
+                $for_save['date_end'] = date('Y-m-d');
             }
             $price = FinClientWorksPricesService::save_new($for_save);
 
@@ -144,7 +144,7 @@ class ClientWorksService extends Service
         }
 
 
-        $work->visit_date = Carbon::createFromFormat('Y-m-d', $input['visit_date']);
+        $work->visit_date = $input['visit_date'];
         $work->visit_purpose = $input['visit_purpose'];
         $work->what_done = $input['what_done'];
         $work->result = $input['result'];

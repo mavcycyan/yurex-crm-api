@@ -55,7 +55,7 @@ class FinClientWorksPricesService extends Service
             return false;
         }
 
-        $input['date'] = Carbon::createFromFormat('Y-m-d', $input['date']);
+//        $input['date'] = Carbon::createFromFormat('Y-m-d', );
         $input['date_end'] = null;
         $payment = FinClientWorkPrice::create($input);
         return $payment;
@@ -120,7 +120,7 @@ class FinClientWorksPricesService extends Service
                             $amount_sum += (int) $amount;
                         }
                         if ($amount_sum >= $price['price']) {
-                            $update['date_end'] = Carbon::createFromFormat('Y-m-d', date('Y-m-d'));
+                            $update['date_end'] = date('Y-m-d');
                         }
                     }
                     FinClientWorkPrice::where('id', $price['id'])
@@ -177,7 +177,7 @@ class FinClientWorksPricesService extends Service
             if (count($prices_null) > 0) {
                 foreach ($prices_null as $price) {
                     $data_pr = array(
-                        'date' => Carbon::createFromFormat('Y-m-d', date('Y-m-d')),
+                        'date' => date('Y-m-d'),
                         'price' => $price['price'],
                         'client_work_id' => $client_work_id,
                     );
@@ -188,7 +188,7 @@ class FinClientWorksPricesService extends Service
                             $amount_sum += (int) $amount;
                         }
                         if ($amount_sum >= $price['price']) {
-                            $data_pr['date_end'] = Carbon::createFromFormat('Y-m-d', date('Y-m-d'));
+                            $data_pr['date_end'] = date('Y-m-d');
                         }
                     }
                     $new_pr = FinClientWorkPrice::create($data_pr);

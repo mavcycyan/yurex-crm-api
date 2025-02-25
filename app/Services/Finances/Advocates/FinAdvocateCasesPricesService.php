@@ -62,7 +62,7 @@ class FinAdvocateCasesPricesService extends Service
             return false;
         }
 
-        $input['date'] = Carbon::createFromFormat('Y-m-d', $input['date']);
+        $input['date'] = $input['date'];
         $input['date_end'] = null;
         $payment = FinAdvocateCasePrice::create($input);
         return $payment;
@@ -99,7 +99,7 @@ class FinAdvocateCasesPricesService extends Service
                             $amount_sum += (int) $amount;
                         }
                         if ($amount_sum >= $price['price']) {
-                            $update['date_end'] = Carbon::createFromFormat('Y-m-d', date('Y-m-d'));
+                            $update['date_end'] = date('Y-m-d');
                         }
                     }
                     FinAdvocateCasePrice::where('id', $price['id'])
@@ -179,7 +179,7 @@ class FinAdvocateCasesPricesService extends Service
             if (count($prices_null) > 0) {
                 foreach ($prices_null as $price) {
                     $data_pr = array(
-                        'date' => Carbon::createFromFormat('Y-m-d', date('Y-m-d')),
+                        'date' => date('Y-m-d'),
                         'price' => $price['price'],
                         'advocate_case_id' => $parent_id,
                     );
@@ -196,7 +196,7 @@ class FinAdvocateCasesPricesService extends Service
                             $amount_sum += (int) $amount;
                         }
                         if ($amount_sum >= $price['price']) {
-                            $data_pr['date_end'] = Carbon::createFromFormat('Y-m-d', date('Y-m-d'));
+                            $data_pr['date_end'] = date('Y-m-d');
                         }
                     }
                     $new_pr = FinAdvocateCasePrice::create($data_pr);

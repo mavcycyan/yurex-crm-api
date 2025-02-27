@@ -20,6 +20,8 @@ return new class extends Migration
             $table->date('birthday')->nullable();
             $table->string('address')->nullable();
             $table->string('phone')->nullable();
+            $table->string('certificate_num')->nullable();
+            $table->text('certificate_place')->nullable();
             $table->rememberToken();
             $table->unsignedBigInteger('role_id');
             $table->foreign('role_id')->references('id')->on('roles')->onDelete('cascade');

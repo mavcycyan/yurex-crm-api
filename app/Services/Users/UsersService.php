@@ -46,6 +46,8 @@ class UsersService extends Service
         $user->address = $input['address'];
         $user->phone = $input['phone'];
         $user->role_id = $input['role_id'];
+        $user->certificate_num = $input['certificate_num'];
+        $user->certificate_place = $input['certificate_place'];
 
         $user->save();
 

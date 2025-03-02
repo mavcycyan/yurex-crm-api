@@ -8,7 +8,6 @@ use App\Services\Finances\Clients\FinClientWorksPaymentsService;
 use App\Services\Finances\Clients\FinClientWorksPricesService;
 use App\Services\Service;
 use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Validator;
 
 class ClientWorksService extends Service
@@ -34,7 +33,7 @@ class ClientWorksService extends Service
                     'phone' => $work->client->phone,
                     'result' => $work->result,
                     'fee' => $work->latestFinClientWorkPrice->price ?? null,
-                    'date_end' => $work->latestFinClientWorkPrice->date_end ?? null,
+                    'fee_status' => $work->latestFinClientWorkPrice->status ?? null,
                     'client_id' => $work->client_id,
                 ];
             });
@@ -66,10 +65,12 @@ class ClientWorksService extends Service
             return [
                 'id' => $work->id,
                 'visit_date' => $work->visit_date,
+                'visit_date_end' => $work->visit_date_end,
                 'visit_purpose' => $work->visit_purpose,
                 'result' => $work->result,
+                'worker' => $work->worker,
                 'fee' => $work->latestFinClientWorkPrice->price ?? null,
-                'date_end' => $work->latestFinClientWorkPrice->date_end ?? null,
+                'fee_status' => $work->latestFinClientWorkPrice->status ?? null,
                 'client_id' => $work->client_id,
             ];
         });
@@ -86,7 +87,7 @@ class ClientWorksService extends Service
         $work = ClientWork::find($id);
         $work->what_done = unserialize($work->what_done);
         $work->fee = $work->latestFinClientWorkPrice->price ?? null;
-        $work->date_end = $work->latestFinClientWorkPrice->date_end ?? null;
+        $work->status = $work->latestFinClientWorkPrice->status ?? null;
         return self::sendResponse($work, 'Client work returned successfully');
     }
 
@@ -111,9 +112,6 @@ class ClientWorksService extends Service
         if (isset($input['fee'])) {
             $fee = ($input['fee'] !== '') ? $input['fee'] : 0;
             $for_save = array('date' => $input['visit_date'], 'price' => $fee, 'client_work_id' => $work->id);
-            if ($input['payment'] !== '' && $input['payment'] >= $fee) {
-                $for_save['date_end'] = date('Y-m-d');
-            }
             $price = FinClientWorksPricesService::save_new($for_save);
 
             if (isset($input['payment']) && $price !== false) {
@@ -145,9 +143,11 @@ class ClientWorksService extends Service
 
 
         $work->visit_date = $input['visit_date'];
+        $work->visit_date_end = $input['visit_date_end'];
         $work->visit_purpose = $input['visit_purpose'];
         $work->what_done = $input['what_done'];
         $work->result = $input['result'];
+        $work->worker = $input['worker'];
         $work->client_id = $input['client_id'];
 
         $work->save();

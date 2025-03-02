@@ -55,7 +55,6 @@ class FinClientWorksPricesService extends Service
             return false;
         }
 
-//        $input['date'] = Carbon::createFromFormat('Y-m-d', );
         $input['date_end'] = null;
         $payment = FinClientWorkPrice::create($input);
         return $payment;
@@ -67,7 +66,10 @@ class FinClientWorksPricesService extends Service
     "prices": [
         {
             "id": 2,
+            "date": "2025-02-20",
+            "date_end": "2025-02-22",
             "price": "1500.00",
+            "status": "payed",
             "payments": [
                 {
                     "id": 1,
@@ -78,7 +80,10 @@ class FinClientWorksPricesService extends Service
         },
         {
             "id": null,
+            "date": "2025-02-20",
+            "date_end": "2025-02-22",
             "price": "2000",
+            "status": "",
             "payments": [
                 {
                     "id": null,
@@ -112,17 +117,12 @@ class FinClientWorksPricesService extends Service
             }
             if (count($prices) > 0) {
                 foreach ($prices as $price) {
-                    $update = array('price' => $price['price']);
-                    if (count($price['payments']) > 0) {
-                        $amounts = collect($price['payments'])->pluck('amount')->toArray();
-                        $amount_sum = 0;
-                        foreach ($amounts as $amount) {
-                            $amount_sum += (int) $amount;
-                        }
-                        if ($amount_sum >= $price['price']) {
-                            $update['date_end'] = date('Y-m-d');
-                        }
-                    }
+                    $update = array(
+                        'date' => $price['date'],
+                        'date_end' => $price['date_end'],
+                        'price' => $price['price'],
+                        'status' => $price['status']
+                    );
                     FinClientWorkPrice::where('id', $price['id'])
                         ->update($update);
 
@@ -177,20 +177,12 @@ class FinClientWorksPricesService extends Service
             if (count($prices_null) > 0) {
                 foreach ($prices_null as $price) {
                     $data_pr = array(
-                        'date' => date('Y-m-d'),
+                        'date' => $price['date'],
+                        'date_end' => $price['date_end'],
                         'price' => $price['price'],
+                        'status' => $price['status'],
                         'client_work_id' => $client_work_id,
                     );
-                    if (count($price['payments']) > 0) {
-                        $amounts = collect($price['payments'])->pluck('amount')->toArray();
-                        $amount_sum = 0;
-                        foreach ($amounts as $amount) {
-                            $amount_sum += (int) $amount;
-                        }
-                        if ($amount_sum >= $price['price']) {
-                            $data_pr['date_end'] = date('Y-m-d');
-                        }
-                    }
                     $new_pr = FinClientWorkPrice::create($data_pr);
 
                     // payments

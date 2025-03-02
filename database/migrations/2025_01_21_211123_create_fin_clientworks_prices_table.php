@@ -16,6 +16,7 @@ return new class extends Migration
             $table->date('date')->nullable();
             $table->date('date_end')->nullable();
             $table->decimal('price')->nullable();
+            $table->string('status')->nullable();
             $table->unsignedBigInteger('client_work_id');
             $table->foreign('client_work_id')->references('id')->on('client_works');
             $table->timestamps();

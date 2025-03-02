@@ -13,7 +13,11 @@ class FinClientWorkPrice extends Model
     use HasFactory;
 
     protected $fillable = [
-        'date', 'date_end', 'price', 'client_work_id'
+        'date',
+        'date_end',
+        'price',
+        'status',
+        'client_work_id'
     ];
 
 

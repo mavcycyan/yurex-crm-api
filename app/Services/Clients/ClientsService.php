@@ -16,6 +16,13 @@ class ClientsService extends Service
         if (count($input) > 0) {
             $query = self::sorting($input, $query);
             $query = self::pagination($input, $query);
+            if (isset($input['with_pending'])) {
+                $query->withCount([
+                    'client_works as pending_works' => function ($query) {
+                        $query->where('result', 'pending');
+                    }
+                ]);
+            }
         }
         $clients = $query->get();
         $count = Client::select('*')->get()->count();
@@ -29,7 +36,7 @@ class ClientsService extends Service
             $res->client_works = $client->client_works->map(function ($item) {
                 $item->what_done = unserialize($item->what_done);
                 return $item;
-            });;
+            });
         }
         return self::sendResponse($res, 'Client "' . $client->full_name . '" returned successfully');
     }

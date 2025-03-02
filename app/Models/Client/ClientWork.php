@@ -12,7 +12,13 @@ class ClientWork extends Model
     use HasFactory;
 
     protected $fillable = [
-        'visit_date', 'visit_purpose', 'what_done', 'result', 'client_id'
+        'visit_date',
+        'visit_date_end',
+        'visit_purpose',
+        'what_done',
+        'result',
+        'worker',
+        'client_id'
     ];
 
     protected $casts = [

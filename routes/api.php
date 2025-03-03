@@ -29,6 +29,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::middleware(['auth:sanctum', 'role:root,director'])->post('/register', [AuthController::class, 'register']);
+Route::middleware(['auth:sanctum', 'role:root,director'])->post('/password_reset/{id}', [AuthController::class, 'password_reset']);
 Route::post('/login', [AuthController::class, 'login']);
 
 //users routes

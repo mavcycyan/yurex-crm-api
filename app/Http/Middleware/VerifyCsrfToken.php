@@ -50,5 +50,7 @@ class VerifyCsrfToken extends Middleware
 
         'api/users',
         'api/users/*',
+
+        'api/password_reset/*',
     ];
 }

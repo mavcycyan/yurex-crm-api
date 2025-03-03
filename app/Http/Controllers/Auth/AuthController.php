@@ -18,6 +18,10 @@ class AuthController extends Controller
         return AuthService::login($request);
     }
 
+    public function password_reset($id, Request $request)
+    {
+        return AuthService::password_reset($id, $request);
+    }
     public function logout(Request $request)
     {
         return AuthService::logout($request);

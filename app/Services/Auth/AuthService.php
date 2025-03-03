@@ -66,4 +66,30 @@ class AuthService extends Service
         $request->user()->currentAccessToken()->delete();
         return response()->json(['message' => 'Logged out']);
     }
+
+    public static function password_reset($id, Request $request)
+    {
+        $input = $request->all();
+
+        $validator = Validator::make($input, [
+            'password' => 'required|min:4',
+            'check_password' => 'required|same:password',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['success' => false, 'error' => $validator->errors()], 422);
+        }
+
+        $user = User::find($id);
+        if (!$user) {
+            return response()->json(['success' => false, 'error' => 'Користувач не знайдений'], 404);
+        }
+
+        $user->password = Hash::make($input['password']);
+        $user->save();
+
+        $user->tokens()->delete();
+
+        return response()->json(['success' => true, 'message' => 'Пароль успішно змінено, авторизацію скасовано'], 200);
+    }
 }

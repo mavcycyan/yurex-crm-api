@@ -62,7 +62,6 @@ class FinAdvocateCasesPricesService extends Service
             return false;
         }
 
-        $input['date'] = $input['date'];
         $input['date_end'] = null;
         $payment = FinAdvocateCasePrice::create($input);
         return $payment;
@@ -85,22 +84,17 @@ class FinAdvocateCasesPricesService extends Service
             }
             if (count($prices) > 0) {
                 foreach ($prices as $price) {
-                    $update = array('price' => $price['price']);
+                    $update = array(
+                        'date' => $price['date'],
+                        'date_end' => $price['date_end'],
+                        'price' => $price['price'],
+                        'status' => $price['status']
+                    );
                     if (isset($price['name'])) {
                         $update['name'] = $price['name'];
                     }
                     if (isset($price['deadlines']) && $price['deadlines'] !== '') {
                         $update['deadlines'] = serialize($price['deadlines']);
-                    }
-                    if (count($price['payments']) > 0) {
-                        $amounts = collect($price['payments'])->pluck('amount')->toArray();
-                        $amount_sum = 0;
-                        foreach ($amounts as $amount) {
-                            $amount_sum += (int) $amount;
-                        }
-                        if ($amount_sum >= $price['price']) {
-                            $update['date_end'] = date('Y-m-d');
-                        }
                     }
                     FinAdvocateCasePrice::where('id', $price['id'])
                         ->update($update);
@@ -179,8 +173,10 @@ class FinAdvocateCasesPricesService extends Service
             if (count($prices_null) > 0) {
                 foreach ($prices_null as $price) {
                     $data_pr = array(
-                        'date' => date('Y-m-d'),
+                        'date' => $price['date'],
+                        'date_end' => $price['date_end'],
                         'price' => $price['price'],
+                        'status' => $price['status'],
                         'advocate_case_id' => $parent_id,
                     );
                     if (isset($price['name'])) {
@@ -188,16 +184,6 @@ class FinAdvocateCasesPricesService extends Service
                     }
                     if (isset($price['deadlines']) && $price['deadlines'] !== '') {
                         $data_pr['deadlines'] = serialize($price['deadlines']);
-                    }
-                    if (count($price['payments']) > 0) {
-                        $amounts = collect($price['payments'])->pluck('amount')->toArray();
-                        $amount_sum = 0;
-                        foreach ($amounts as $amount) {
-                            $amount_sum += (int) $amount;
-                        }
-                        if ($amount_sum >= $price['price']) {
-                            $data_pr['date_end'] = date('Y-m-d');
-                        }
                     }
                     $new_pr = FinAdvocateCasePrice::create($data_pr);
 

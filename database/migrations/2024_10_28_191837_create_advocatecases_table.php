@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('advocate_cases', function (Blueprint $table) {
             $table->id();
             $table->date('visit_date');
+            $table->date('visit_date_end')->nullable();
             $table->text('advocates')->nullable();
             $table->string('proc_num')->nullable();
             $table->text('plot')->nullable();

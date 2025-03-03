@@ -13,7 +13,13 @@ class FinAdvocateCasePrice extends Model
     use HasFactory;
 
     protected $fillable = [
-        'date', 'date_end', 'price', 'name', 'deadlines', 'advocate_case_id'
+        'date',
+        'date_end',
+        'price',
+        'name',
+        'deadlines',
+        'status',
+        'advocate_case_id'
     ];
 
 

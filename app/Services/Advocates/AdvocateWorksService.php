@@ -17,6 +17,7 @@ class AdvocateWorksService extends Service
             $query->where('advocate_case_id', '=', $input['case_id']);
         }
         if (count($input) > 0) {
+            $query = self::filtering($input, $query);
             $query = self::sorting($input, $query);
             $query = self::pagination($input, $query);
         }
@@ -24,6 +25,9 @@ class AdvocateWorksService extends Service
         $query_count = AdvocateWork::select('*');
         if (isset($input['case_id']) && $input['case_id'] !== '') {
             $query_count->where('advocate_case_id', '=', $input['case_id']);
+        }
+        if (count($input) > 0) {
+            $query_count = self::filtering($input, $query_count);
         }
         $count = $query_count->get()->count();
         return self::sendResponse($works->toArray(), 'Advocate works returned successfully', $count);
@@ -50,7 +54,6 @@ class AdvocateWorksService extends Service
         if (isset($input['what_done']) && $input['what_done'] !== '') {
             $input['what_done'] = serialize($input['what_done']);
         }
-        $input['date'] = $input['date'];
         $work = AdvocateWork::create($input);
         return self::sendResponse($work, 'Advocate work created successfully');
     }
@@ -74,9 +77,11 @@ class AdvocateWorksService extends Service
         }
 
         $work->date = $input['date'];
+        $work->date_end = $input['date_end'];
         $work->name = $input['name'];
         $work->what_done = $input['what_done'];
         $work->result = $input['result'];
+        $work->worker = $input['worker'];
         $work->advocate_case_id = $input['advocate_case_id'];
 
         $work->save();

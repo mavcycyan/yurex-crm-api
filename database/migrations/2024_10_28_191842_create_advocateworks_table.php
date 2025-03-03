@@ -15,9 +15,11 @@ return new class extends Migration
         Schema::create('advocate_works', function (Blueprint $table) {
             $table->id();
             $table->date('date');
+            $table->date('date_end')->nullable();
             $table->string('name')->nullable();
             $table->longText('what_done')->nullable();
             $table->string('result')->nullable();
+            $table->string('worker')->nullable();
             $table->unsignedBigInteger('advocate_case_id');
             $table->foreign('advocate_case_id')->references('id')->on('advocate_cases');
             $table->timestamps();

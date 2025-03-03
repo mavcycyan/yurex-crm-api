@@ -22,9 +22,10 @@ class SubscribersService extends Service
             $query = self::sorting($input, $query);
             $query = self::pagination($input, $query);
         }
+        $users = User::where('role_id', '=', 4)->get();
         $subscribers = $query->get()
-            ->map(function ($work) {
-                $user = User::find($work->responsible_person_id);
+            ->map(function ($work) use ($users) {
+                $user = $users->where('id', $work->responsible_person_id)->first();
                 return [
                     'id' => $work->id,
                     'name' => $work->name,

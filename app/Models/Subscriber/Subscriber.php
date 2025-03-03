@@ -2,6 +2,7 @@
 
 namespace App\Models\Subscriber;
 
+use App\Models\Auth\User;
 use App\Models\Finance\Subscriber\FinSubscriberPrice;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -12,7 +13,7 @@ class Subscriber extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name', 'edrpou', 'contract_date', 'responsible_person_id', 'contact_person_name', 'contact_person_phone', 'director_person_name', 'director_person_phone', 'legal_address', 'actual_address', 'info'
+        'name', 'edrpou', 'contract_date', 'responsible_person_id', 'contact_person_name', 'contact_person_phone', 'director_person_name', 'director_person_phone', 'accountant_person_name', 'accountant_person_phone', 'legal_address', 'actual_address', 'info'
     ];
 
     public function subscriber_works(): HasMany

@@ -13,7 +13,11 @@ class FinSubscriberPrice extends Model
     use HasFactory;
 
     protected $fillable = [
-        'date', 'date_end', 'price', 'subscriber_id'
+        'date',
+        'date_end',
+        'price',
+        'status',
+        'subscriber_id'
     ];
 
 

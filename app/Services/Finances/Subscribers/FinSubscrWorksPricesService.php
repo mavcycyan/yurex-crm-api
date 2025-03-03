@@ -56,7 +56,6 @@ class FinSubscrWorksPricesService extends Service
             return false;
         }
 
-//        $input['date'] = Carbon::createFromFormat('Y-m-d', $input['date']);
         $input['date_end'] = null;
         $payment = FinSubscrWorkPrice::create($input);
         return $payment;
@@ -79,17 +78,12 @@ class FinSubscrWorksPricesService extends Service
             }
             if (count($prices) > 0) {
                 foreach ($prices as $price) {
-                    $update = array('price' => $price['price']);
-                    if (count($price['payments']) > 0) {
-                        $amounts = collect($price['payments'])->pluck('amount')->toArray();
-                        $amount_sum = 0;
-                        foreach ($amounts as $amount) {
-                            $amount_sum += (int) $amount;
-                        }
-                        if ($amount_sum >= $price['price']) {
-                            $update['date_end'] = date('Y-m-d');
-                        }
-                    }
+                    $update = array(
+                        'date' => $price['date'],
+                        'date_end' => $price['date_end'],
+                        'price' => $price['price'],
+                        'status' => $price['status']
+                    );
                     FinSubscrWorkPrice::where('id', $price['id'])
                         ->update($update);
 
@@ -144,20 +138,12 @@ class FinSubscrWorksPricesService extends Service
             if (count($prices_null) > 0) {
                 foreach ($prices_null as $price) {
                     $data_pr = array(
-                        'date' => date('Y-m-d'),
+                        'date' => $price['date'],
+                        'date_end' => $price['date_end'],
                         'price' => $price['price'],
+                        'status' => $price['status'],
                         'subscriber_work_id' => $subscriber_work_id,
                     );
-                    if (count($price['payments']) > 0) {
-                        $amounts = collect($price['payments'])->pluck('amount')->toArray();
-                        $amount_sum = 0;
-                        foreach ($amounts as $amount) {
-                            $amount_sum += (int) $amount;
-                        }
-                        if ($amount_sum >= $price['price']) {
-                            $data_pr['date_end'] = date('Y-m-d');
-                        }
-                    }
                     $new_pr = FinSubscrWorkPrice::create($data_pr);
 
                     // payments

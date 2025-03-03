@@ -13,7 +13,13 @@ class SubscriberWork extends Model
     use HasFactory;
 
     protected $fillable = [
-        'date', 'name', 'what_done', 'result', 'subscriber_id'
+        'date',
+        'date_end',
+        'name',
+        'what_done',
+        'result',
+        'worker',
+        'subscriber_id'
     ];
 
     protected $casts = [

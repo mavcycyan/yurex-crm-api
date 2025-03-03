@@ -2,6 +2,7 @@
 
 namespace App\Services\Subscribers;
 
+use App\Models\Auth\User;
 use App\Models\Finance\Subscriber\FinSubscriberPrice;
 use App\Models\Subscriber\Subscriber;
 use App\Services\Finances\Subscribers\FinSubscribersPaymentsService;
@@ -23,19 +24,23 @@ class SubscribersService extends Service
         }
         $subscribers = $query->get()
             ->map(function ($work) {
+                $user = User::find($work->responsible_person_id);
                 return [
                     'id' => $work->id,
                     'name' => $work->name,
                     'edrpou' => $work->edrpou,
+                    'responsible_person' => $user->name,
                     'contract_date' => $work->contract_date,
                     'contact_person_name' => $work->contact_person_name,
                     'contact_person_phone' => $work->contact_person_phone,
                     'director_person_name' => $work->director_person_name,
                     'director_person_phone' => $work->director_person_phone,
+                    'accountant_person_name' => $work->accountant_person_name,
+                    'accountant_person_phone' => $work->accountant_person_phone,
                     'legal_address' => $work->legal_address,
                     'actual_address' => $work->actual_address,
                     'fee' => $work->latestFinSubscriberPrice->price ?? null,
-                    'date_end' => $work->latestFinSubscriberPrice->date_end ?? null,
+                    'fee_status' => $work->latestFinSubscriberPrice->status ?? null,
                 ];
             });
         $count = Subscriber::select('*')->get()->count();
@@ -50,6 +55,10 @@ class SubscribersService extends Service
                 $item->what_done = unserialize($item->what_done);
                 return $item;
             });
+        }
+        if ($res->responsible_person_id !== null) {
+            $user = User::find($res->responsible_person_id);
+            $res->responsible_person = $user->name;
         }
         $res->fee = $res->latestFinSubscriberPrice->price ?? null;
         $res->date_end = $res->latestFinSubscriberPrice->date_end ?? null;
@@ -71,9 +80,6 @@ class SubscribersService extends Service
         if (isset($input['fee'])) {
             $fee = ($input['fee'] !== '') ? $input['fee'] : 0;
             $for_save = array('date' => $input['contract_date'], 'price' => $fee, 'subscriber_id' => $subscriber->id);
-            if ($input['payment'] !== '' && $input['payment'] >= $fee) {
-                $for_save['date_end'] = date('Y-m-d');
-            }
             $price = FinSubscribersPricesService::save_new($for_save);
 
             if (isset($input['payment']) && $price !== false) {
@@ -104,6 +110,8 @@ class SubscribersService extends Service
         $subscriber->contact_person_phone = $input['contact_person_phone'];
         $subscriber->director_person_name = $input['director_person_name'];
         $subscriber->director_person_phone = $input['director_person_phone'];
+        $subscriber->accountant_person_name = $input['accountant_person_name'];
+        $subscriber->accountant_person_phone = $input['accountant_person_phone'];
         $subscriber->legal_address = $input['legal_address'];
         $subscriber->actual_address = $input['actual_address'];
         $subscriber->info = $input['info'];

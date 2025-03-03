@@ -21,6 +21,8 @@ return new class extends Migration
             $table->string('contact_person_phone')->nullable();
             $table->string('director_person_name')->nullable();
             $table->string('director_person_phone')->nullable();
+            $table->string('accountant_person_name')->nullable();
+            $table->string('accountant_person_phone')->nullable();
             $table->string('legal_address')->nullable();
             $table->string('actual_address')->nullable();
             $table->string('holder')->nullable();

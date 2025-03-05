@@ -24,7 +24,18 @@ class ClientsService extends Service
                 ]);
             }
         }
-        $clients = $query->get();
+        $clients = $query->get()
+            ->map(function ($work) {
+                return [
+                    'id' => $work->id,
+                    'full_name' => $work->full_name,
+                    'phone' => $work->phone,
+                    'address' => $work->address,
+                    'visit_date' => $work->oldestWork->visit_date ?? null,
+                    'visit_purpose' => $work->oldestWork->visit_purpose ?? null,
+                    'pending_works' => $work->pending_works
+                ];
+            });
         $count = Client::select('*')->get()->count();
         return self::sendResponse($clients->toArray(), 'Clients returned successfully', $count);
     }

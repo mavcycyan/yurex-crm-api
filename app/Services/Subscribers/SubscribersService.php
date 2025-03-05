@@ -30,7 +30,7 @@ class SubscribersService extends Service
                     'id' => $work->id,
                     'name' => $work->name,
                     'edrpou' => $work->edrpou,
-                    'responsible_person' => $user->name,
+                    'responsible_person' => $user->name ?? null,
                     'contract_date' => $work->contract_date,
                     'contact_person_name' => $work->contact_person_name,
                     'contact_person_phone' => $work->contact_person_phone,

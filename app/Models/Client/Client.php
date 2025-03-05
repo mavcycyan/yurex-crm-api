@@ -18,4 +18,9 @@ class Client extends Model
     {
         return $this->hasMany(ClientWork::class);
     }
+
+    public function oldestWork()
+    {
+        return $this->hasOne(ClientWork::class, 'client_id')->oldest('visit_date');
+    }
 }

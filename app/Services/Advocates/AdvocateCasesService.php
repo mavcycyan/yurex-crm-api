@@ -43,7 +43,7 @@ class AdvocateCasesService extends Service
                         $str = '';
                         if ($case->advocates && $case->advocates !== null) {
                             $ids = unserialize($case->advocates);
-                            if (count($ids) > 0) {
+                            if (is_array($ids) && count($ids) > 0) {
                                 $users = $advocates->whereIn('id', $ids);
                                 if (count($users) > 0) {
                                     foreach ($users as $key => $user) {

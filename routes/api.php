@@ -7,6 +7,7 @@ use App\Http\Controllers\Advocates\AdvocateWorksController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Clients\ClientsController;
 use App\Http\Controllers\Clients\ClientWorksController;
+use App\Http\Controllers\Files\Clients\FilesClientWorks;
 use App\Http\Controllers\Finances\Advocates\FinAdvocateCasesPrices;
 use App\Http\Controllers\Finances\Clients\FinClientWorksPrices;
 use App\Http\Controllers\Finances\Subscribers\FinSubscribersPrices;
@@ -48,7 +49,12 @@ Route::middleware(['auth:sanctum', 'role:root,director,lawyer'])->group(function
     Route::resource('/client_works', ClientWorksController::class)->except([
         'edit', 'create'
     ]);
+
     Route::get('/client_works_list', [ClientWorksController::class, 'get_by_client']);
+
+    Route::post('/client_works/{id}/files', [FilesClientWorks::class, 'upload']);
+    Route::delete('/client_works/{workid}/files/{id}', [FilesClientWorks::class, 'destroy']);
+    Route::get('/client_works/{id}/files', [FilesClientWorks::class, 'getFiles']);
 });
 
 //subscribers routes

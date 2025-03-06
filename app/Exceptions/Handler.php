@@ -53,8 +53,10 @@ class Handler extends ExceptionHandler
             $statusCode = $e instanceof HttpException ? $e->getStatusCode() : 500;
 
             return response()->json([
+                'status' => false,
                 'message' => $e->getMessage() ?: 'Server error',
                 'error' => class_basename($e),
+                'trace' => $e->getTrace()
             ], $statusCode);
         }
 

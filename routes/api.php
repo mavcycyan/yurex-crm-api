@@ -7,7 +7,9 @@ use App\Http\Controllers\Advocates\AdvocateWorksController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Clients\ClientsController;
 use App\Http\Controllers\Clients\ClientWorksController;
+use App\Http\Controllers\Files\Advocate\FilesAdvocateWorks;
 use App\Http\Controllers\Files\Clients\FilesClientWorks;
+use App\Http\Controllers\Files\Subscriber\FilesSubscriberWorks;
 use App\Http\Controllers\Finances\Advocates\FinAdvocateCasesPrices;
 use App\Http\Controllers\Finances\Clients\FinClientWorksPrices;
 use App\Http\Controllers\Finances\Subscribers\FinSubscribersPrices;
@@ -66,6 +68,10 @@ Route::middleware(['auth:sanctum', 'role:root,director,lawyer'])->group(function
         'edit', 'create'
     ]);
     Route::get('/lawyer_advocates', [AdvocatesController::class, 'index']);
+
+    Route::post('/subscriber_works/{id}/files', [FilesSubscriberWorks::class, 'upload']);
+    Route::delete('/subscriber_works/{workid}/files/{id}', [FilesSubscriberWorks::class, 'destroy']);
+    Route::get('/subscriber_works/{id}/files', [FilesSubscriberWorks::class, 'getFiles']);
 });
 
 //advocates routes
@@ -85,6 +91,10 @@ Route::middleware(['auth:sanctum', 'role:root,director,advocate'])->group(functi
     ]);
     Route::get('/get_client_case/{id}', [AdvocateCasesController::class, 'get_client_case']);
     Route::get('/advocate_clients', [ClientsController::class, 'index']);
+
+    Route::post('/advocates_works/{id}/files', [FilesAdvocateWorks::class, 'upload']);
+    Route::delete('/advocates_works/{workid}/files/{id}', [FilesAdvocateWorks::class, 'destroy']);
+    Route::get('/advocates_works/{id}/files', [FilesAdvocateWorks::class, 'getFiles']);
 });
 
 //finance routes

@@ -33,7 +33,8 @@ class ClientsService extends Service
                     'address' => $work->address,
                     'visit_date' => $work->oldestWork->visit_date ?? null,
                     'visit_purpose' => $work->oldestWork->visit_purpose ?? null,
-                    'pending_works' => $work->pending_works
+                    'pending_works' => $work->pending_works,
+                    'worker' => $work->worker
                 ];
             });
         $count = Client::select('*')->get()->count();
@@ -67,7 +68,8 @@ class ClientsService extends Service
         return self::sendResponse($client, 'Client created successfully');
     }
 
-    public static function update(Request $request, Client $client) {
+    public static function update($id, Request $request) {
+        $client = Client::find($id);
         $input = $request->all();
 
         $validator = Validator::make($input, [
@@ -83,6 +85,7 @@ class ClientsService extends Service
         $client->birthday = $input['birthday'];
         $client->address = $input['address'];
         $client->phone = $input['phone'];
+        $client->worker = $input['worker'];
 
         $client->save();
 

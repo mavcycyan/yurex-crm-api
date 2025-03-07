@@ -18,8 +18,8 @@ class ClientsController extends Controller
     public function store(Request $request) {
         return ClientsService::store($request);
     }
-    public function update(Request $request, Client $client) {
-        return ClientsService::update($request, $client);
+    public function update($id, Request $request) {
+        return ClientsService::update($id, $request);
     }
     public function destroy($id) {
         return ClientsService::destroy($id);

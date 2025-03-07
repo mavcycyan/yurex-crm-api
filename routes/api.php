@@ -95,6 +95,11 @@ Route::middleware(['auth:sanctum', 'role:root,director,advocate'])->group(functi
     Route::post('/advocates_works/{id}/files', [FilesAdvocateWorks::class, 'upload']);
     Route::delete('/advocates_works/{workid}/files/{id}', [FilesAdvocateWorks::class, 'destroy']);
     Route::get('/advocates_works/{id}/files', [FilesAdvocateWorks::class, 'getFiles']);
+
+
+    Route::resource('/advocates_clients', ClientsController::class)->except([
+        'edit', 'create'
+    ]);
 });
 
 //finance routes

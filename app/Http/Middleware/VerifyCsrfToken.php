@@ -32,6 +32,8 @@ class VerifyCsrfToken extends Middleware
         'api/advocates_cases/*',
         'api/advocates_works',
         'api/advocates_works/*',
+        'api/advocates_clients',
+        'api/advocates_clients/*',
 
         'api/register',
         'api/login',

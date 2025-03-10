@@ -57,6 +57,10 @@ Route::middleware(['auth:sanctum', 'role:root,director,lawyer'])->group(function
     Route::post('/client_works/{id}/files', [FilesClientWorks::class, 'upload']);
     Route::delete('/client_works/{workid}/files/{id}', [FilesClientWorks::class, 'destroy']);
     Route::get('/client_works/{id}/files', [FilesClientWorks::class, 'getFiles']);
+
+    Route::post('/lawyer_advocates_cases', [AdvocateCasesController::class, 'store']);
+    Route::get('/lawyer_advocates_categories', [AdvocateCategoriesController::class, 'index']);
+    Route::get('/lawyer_advocates_cases', [AdvocateCasesController::class, 'index']);
 });
 
 //subscribers routes

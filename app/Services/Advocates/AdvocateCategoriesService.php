@@ -9,9 +9,46 @@ use Illuminate\Support\Facades\Validator;
 
 class AdvocateCategoriesService extends Service
 {
-    public static function index(Request $request) {
-        $categories = AdvocateCategory::all();
-        return self::sendResponse($categories->toArray(), 'Advocate categories returned successfully');
+    public static function index(Request $request, $parent_id = null) {
+        $input = $request->all();
+        if (isset($input['type']) && $input['type'] === 'formlist') {
+            $categories_query = AdvocateCategory::select('*')->get();
+
+            $parents = $categories_query->whereNull('parent_id')->keyBy('id');
+
+            $children = $categories_query->whereNotNull('parent_id')->groupBy('parent_id');
+
+            $categories = collect();
+
+            foreach ($children as $parentId => $childList) {
+                if (isset($parents[$parentId])) { // Перевіряємо, чи є у дітей батько
+                    foreach ($childList as $child) {
+                        $categories->push([
+                            'id' => $child->id,
+                            'name' => $parents[$parentId]->name . " ({$child->name})"
+                        ]);
+                    }
+                }
+            }
+
+            $independentCategories = $categories_query->whereNull('parent_id')->reject(fn($cat) => isset($children[$cat->id]));
+            foreach ($independentCategories as $category) {
+                $categories->push([
+                    'id' => $category->id,
+                    'name' => $category->name
+                ]);
+            }
+        }
+        else {
+            $categories = AdvocateCategory::select('*')
+                ->where('parent_id', '=', $parent_id)
+                ->get();
+        }
+        $response_extras = [];
+        if ($parent_id !== null) {
+            $response_extras = ['response' => 'subcategories'];
+        }
+        return self::sendResponse($categories->toArray(), 'Advocate categories returned successfully', null, $response_extras);
     }
 
     public static function byslug(Request $request) {

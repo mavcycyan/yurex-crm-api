@@ -26,58 +26,65 @@ class AdvocateCasesService extends Service
         ) {
             $cat = AdvocateCategory::where('slug', '=', $request['advocate_category_slug'])->first();
             if ($cat !== null) {
-                $query = AdvocateCase::with('client')->where('advocate_id', $request['advocate_id'])
-                    ->where('advocate_category_id', $cat->id)
-                    ->join('clients', 'clients.id', '=', 'advocate_cases.client_id')
-                    ->join('users', 'users.id', '=', 'advocate_cases.advocate_id');
-                $input = $request->all();
-                if (count($input) > 0) {
-                    $query = self::filtering($input, $query);
-                    $query = self::sorting($input, $query);
-                    $query = self::pagination($input, $query);
+                if ($cat->hasChildren()) {
+                    return AdvocateCategoriesService::index($request, $cat->id);
                 }
-                $query->select('advocate_cases.*');
-                $advocates = User::where('role_id', '=', 4)->get();
-                $cases = $query->get()
-                    ->map(function ($case) use ($advocates) {
-                        $str = '';
-                        if ($case->advocates && $case->advocates !== null) {
-                            $ids = unserialize($case->advocates);
-                            if (is_array($ids) && count($ids) > 0) {
-                                $users = $advocates->whereIn('id', $ids);
-                                if (count($users) > 0) {
-                                    foreach ($users as $key => $user) {
-                                        if ($key > 1) {
-                                            $str .= ', ';
+                else {
+                    $query = AdvocateCase::with('client')->where('advocate_id', $request['advocate_id'])
+                        ->where('advocate_category_id', $cat->id)
+                        ->join('users', 'users.id', '=', 'advocate_cases.advocate_id');
+                    if (isset($request['client_id']) && $request['client_id'] !== '') {
+                        $query->join('clients', 'clients.id', '=', 'advocate_cases.client_id');
+                    }
+                    $input = $request->all();
+                    if (count($input) > 0) {
+                        $query = self::filtering($input, $query);
+                        $query = self::sorting($input, $query);
+                        $query = self::pagination($input, $query);
+                    }
+                    $query->select('advocate_cases.*');
+                    $advocates = User::where('role_id', '=', 4)->get();
+                    $cases = $query->get()
+                        ->map(function ($case) use ($advocates) {
+                            $str = '';
+                            if ($case->advocates && $case->advocates !== null) {
+                                $ids = unserialize($case->advocates);
+                                if (is_array($ids) && count($ids) > 0) {
+                                    $users = $advocates->whereIn('id', $ids);
+                                    if (count($users) > 0) {
+                                        foreach ($users as $key => $user) {
+                                            if ($key > 1) {
+                                                $str .= ', ';
+                                            }
+                                            $str .= $user->name;
                                         }
-                                        $str .= $user->name;
                                     }
                                 }
                             }
-                        }
-                        $case->advocates_names = $str;
-                        return [
-                            'id' => $case->id,
-                            'visit_date' => $case->visit_date,
-                            'visit_date_end' => $case->visit_date_end,
-                            'advocates_names' => $case->advocates_names,
-                            'proc_num' => $case->proc_num,
-                            'plot' => $case->plot,
-                            'result' => $case->result,
-                            'fee' => $case->latestFinAdvocateCasePrice->price ?? null,
-                            'fee_status' => $case->latestFinAdvocateCasePrice->status ?? null,
-                            'advocate_category_id' => $case->advocate_category_id,
-                            'advocate_name' => $case->advocate->name ?? null,
-                            'advocate_id' => $case->advocate_id,
-                            'client_name' => $case->client->full_name ?? null,
-                        ];
-                    });
-                $count_query = AdvocateCase::where('advocate_id', $request['advocate_id'])
-                    ->where('advocate_category_id', $cat->id);
-                if (count($input) > 0) {
-                    $count_query = self::filtering($input, $count_query);
+                            $case->advocates_names = $str;
+                            return [
+                                'id' => $case->id,
+                                'visit_date' => $case->visit_date,
+                                'visit_date_end' => $case->visit_date_end,
+                                'advocates_names' => $case->advocates_names,
+                                'proc_num' => $case->proc_num,
+                                'plot' => $case->plot,
+                                'result' => $case->result,
+                                'fee' => $case->latestFinAdvocateCasePrice->price ?? null,
+                                'fee_status' => $case->latestFinAdvocateCasePrice->status ?? null,
+                                'advocate_category_id' => $case->advocate_category_id,
+                                'advocate_name' => $case->advocate->name ?? null,
+                                'advocate_id' => $case->advocate_id,
+                                'client_name' => $case->client->full_name ?? null,
+                            ];
+                        });
+                    $count_query = AdvocateCase::where('advocate_id', $request['advocate_id'])
+                        ->where('advocate_category_id', $cat->id);
+                    if (count($input) > 0) {
+                        $count_query = self::filtering($input, $count_query);
+                    }
+                    $count = $count_query->get()->count();
                 }
-                $count = $count_query->get()->count();
             } else {
                 return self::sendError('Wrong advocate category slug');
             }
@@ -185,7 +192,8 @@ class AdvocateCasesService extends Service
             }
             $count = $count_query->get()->count();
         }
-        return self::sendResponse($cases->toArray(), 'Advocate cases returned successfully', $count);
+        $response_extras = ['response' => 'cases'];
+        return self::sendResponse($cases->toArray(), 'Advocate cases returned successfully', $count, $response_extras);
     }
 
     public static function show($id, Request $request) {

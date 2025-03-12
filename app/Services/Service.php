@@ -6,7 +6,7 @@ class Service
 {
 
 
-    public static function sendResponse($result, $message, $count_all = null) {
+    public static function sendResponse($result, $message, $count_all = null, $response_extras = []) {
         $response = [
             'success' => true,
             'data'    => $result,
@@ -14,6 +14,9 @@ class Service
         ];
         if ($count_all !== null) {
             $response['all_items'] = $count_all;
+        }
+        if (count($response_extras) > 0) {
+            $response['response_extras'] = $response_extras;
         }
         return response()->json($response);
     }

@@ -34,6 +34,7 @@ use Illuminate\Support\Facades\Route;
 Route::middleware(['auth:sanctum', 'role:root,director'])->post('/register', [AuthController::class, 'register']);
 Route::middleware(['auth:sanctum', 'role:root,director'])->post('/password_reset/{id}', [AuthController::class, 'password_reset']);
 Route::post('/login', [AuthController::class, 'login']);
+//Route::get('/convert_client_case', [AuthController::class, 'convert_client_case']);
 
 //users routes
 Route::middleware(['auth:sanctum', 'role:root,director'])->group(function () {

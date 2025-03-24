@@ -43,9 +43,10 @@ class AdvocateCasesService extends Service
                         $query = self::pagination($input, $query);
                     }
                     $query->select('advocate_cases.*');
-                    $advocates = User::where('role_id', '=', 4)->get();
+                    $advocates = User::select('id', 'name')->where('role_id', '=', 4)->get();
+                    $clients = Client::select('id', 'full_name')->get();
                     $cases = $query->get()
-                        ->map(function ($case) use ($advocates) {
+                        ->map(function ($case) use ($advocates, $clients) {
                             $str = '';
                             if ($case->advocates && $case->advocates !== null) {
                                 $ids = unserialize($case->advocates);
@@ -53,7 +54,7 @@ class AdvocateCasesService extends Service
                                     $users = $advocates->whereIn('id', $ids);
                                     if (count($users) > 0) {
                                         foreach ($users as $key => $user) {
-                                            if ($key > 1) {
+                                            if ($key >= 1) {
                                                 $str .= ', ';
                                             }
                                             $str .= $user->name;
@@ -62,11 +63,32 @@ class AdvocateCasesService extends Service
                                 }
                             }
                             $case->advocates_names = $str;
+
+                            $str = '';
+                            if ($case->clients && $case->clients !== null) {
+                                $ids = unserialize($case->clients);
+                                if (is_array($ids) && count($ids) > 0) {
+                                    $cls = $clients->whereIn('id', $ids);
+                                    if (count($cls) > 0) {
+                                        $index = 0;
+                                        foreach ($cls as $cl) {
+                                            if ($index > 0) {
+                                                $str .= ', ';
+                                            }
+                                            $str .= $cl->full_name;
+                                            $index++;
+                                        }
+                                    }
+                                }
+                            }
+                            $case->clients_names = $str;
                             return [
                                 'id' => $case->id,
                                 'visit_date' => $case->visit_date,
                                 'visit_date_end' => $case->visit_date_end,
                                 'advocates_names' => $case->advocates_names,
+                                'clients_names' => $case->clients_names,
+                                'clients' => unserialize($case->clients),
                                 'proc_num' => $case->proc_num,
                                 'plot' => $case->plot,
                                 'result' => $case->result,
@@ -199,6 +221,7 @@ class AdvocateCasesService extends Service
     public static function show($id, Request $request) {
         $case = AdvocateCase::find($id);
         $res = $case;
+        $case->clients = unserialize($case->clients);
         $case->advocates = unserialize($case->advocates);
         if (isset($case->advocate_works)) {
             $res->advocate_works = $case->advocate_works->map(function ($item) {
@@ -220,6 +243,14 @@ class AdvocateCasesService extends Service
 
         if ($validator->fails()) {
             return self::sendError('Validation Error.', $validator->errors());
+        }
+
+        if (isset($input['clients']) && $input['clients'] !== '') {
+            $clients = array();
+            foreach ($input['clients'] as $cl) {
+                $clients[] = $cl['id'];
+            }
+            $input['clients'] = serialize($clients);
         }
 
         if (isset($input['advocates']) && $input['advocates'] !== '') {
@@ -253,6 +284,14 @@ class AdvocateCasesService extends Service
             return self::sendError('Validation Error.', $validator->errors());
         }
 
+        if (isset($input['clients']) && $input['clients'] !== '') {
+            $clients = array();
+            foreach ($input['clients'] as $cl) {
+                $clients[] = $cl['id'];
+            }
+            $input['clients'] = serialize($clients);
+        }
+
         if (isset($input['advocates']) && $input['advocates'] !== '') {
             $input['advocates'] = serialize($input['advocates']);
         }
@@ -260,12 +299,13 @@ class AdvocateCasesService extends Service
         $case->visit_date = $input['visit_date'];
         $case->visit_date_end = $input['visit_date_end'];
         $case->advocates = $input['advocates'];
+        $case->clients = $input['clients'];
         $case->proc_num = $input['proc_num'];
         $case->plot = $input['plot'];
         $case->plot_big = $input['plot_big'];
         $case->result = $input['result'];
         $case->advocate_category_id = $input['advocate_category_id'];
-        $case->client_id = $input['client_id'];
+        $case->client_id = null;
 
         $case->save();
 
@@ -296,21 +336,27 @@ class AdvocateCasesService extends Service
     }
     public static function get_client_case($id) {
         $case = AdvocateCase::find($id);
-        $res = array('client' => array(), 'case' => $case);
+        $res = array('clients' => array(), 'case' => $case);
         $res['case']->fee = $case->latestFinAdvocateCasePrice->price ?? null;
-        if ($case->client_id !== null) {
-            $res['client'] = Client::find($case->client_id);
+        if ($case->clients !== null) {
+            $case_clients = unserialize($case->clients);
+            if (is_array($case_clients)) {
+                $ids_array = array_map('intval', $case_clients);
+                $res['clients'] = Client::select('*')->whereIn('id', $ids_array)->get();
+            }
         }
         if ($res['case']->advocates && $res['case']->advocates !== null) {
             $ids = unserialize($res['case']->advocates);
-            $users = User::whereIn('id', $ids)->get(['id', 'name']);
             $str = '';
-            if (count($users) > 0) {
-                foreach ($users as $key => $user) {
-                    if ($key > 0) {
-                        $str .= ', ';
+            if (is_array($ids)) {
+                $users = User::whereIn('id', $ids)->get(['id', 'name']);
+                if (count($users) > 0) {
+                    foreach ($users as $key => $user) {
+                        if ($key > 0) {
+                            $str .= ', ';
+                        }
+                        $str .= $user->name;
                     }
-                    $str .= $user->name;
                 }
             }
             $res['case']->advocates_names = $str;

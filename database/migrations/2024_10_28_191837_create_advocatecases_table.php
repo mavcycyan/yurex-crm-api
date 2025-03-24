@@ -16,6 +16,7 @@ return new class extends Migration
             $table->date('visit_date');
             $table->date('visit_date_end')->nullable();
             $table->text('advocates')->nullable();
+            $table->text('clients')->nullable();
             $table->string('proc_num')->nullable();
             $table->text('plot')->nullable();
             $table->string('result')->nullable();

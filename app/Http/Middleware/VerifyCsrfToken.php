@@ -40,6 +40,7 @@ class VerifyCsrfToken extends Middleware
 
         'api/register',
         'api/login',
+        'api/convert_client_case',
 
         'api/fin/clientworks/prices',
         'api/fin/clientworks/prices_bulk_update',

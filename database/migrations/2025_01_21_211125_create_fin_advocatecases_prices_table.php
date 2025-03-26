@@ -16,6 +16,7 @@ return new class extends Migration
             $table->date('date')->nullable();
             $table->date('date_end')->nullable();
             $table->decimal('price')->nullable();
+            $table->string('price_cur')->nullable();
             $table->string('name')->nullable();
             $table->longText('deadlines')->nullable();
             $table->string('status')->nullable();

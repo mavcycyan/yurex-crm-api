@@ -121,6 +121,7 @@ class FinClientWorksPricesService extends Service
                         'date' => $price['date'],
                         'date_end' => $price['date_end'],
                         'price' => $price['price'],
+                        'price_cur' => $price['price_cur'],
                         'status' => $price['status']
                     );
                     FinClientWorkPrice::where('id', $price['id'])
@@ -180,6 +181,7 @@ class FinClientWorksPricesService extends Service
                         'date' => $price['date'],
                         'date_end' => $price['date_end'],
                         'price' => $price['price'],
+                        'price_cur' => $price['price_cur'],
                         'status' => $price['status'],
                         'client_work_id' => $client_work_id,
                     );

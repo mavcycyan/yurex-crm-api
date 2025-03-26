@@ -81,6 +81,7 @@ class FinSubscribersPricesService extends Service
                         'date' => $price['date'],
                         'date_end' => $price['date_end'],
                         'price' => $price['price'],
+                        'price_cur' => $price['price_cur'],
                         'status' => $price['status']
                     );
                     FinSubscriberPrice::where('id', $price['id'])
@@ -140,6 +141,7 @@ class FinSubscribersPricesService extends Service
                         'date' => $price['date'],
                         'date_end' => $price['date_end'],
                         'price' => $price['price'],
+                        'price_cur' => $price['price_cur'],
                         'status' => $price['status'],
                         'subscriber_id' => $subscriber_id,
                     );

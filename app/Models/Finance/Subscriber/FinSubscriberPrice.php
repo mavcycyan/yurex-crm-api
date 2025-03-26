@@ -16,6 +16,7 @@ class FinSubscriberPrice extends Model
         'date',
         'date_end',
         'price',
+        'price_cur',
         'status',
         'subscriber_id'
     ];

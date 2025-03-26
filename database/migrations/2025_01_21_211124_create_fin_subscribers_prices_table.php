@@ -16,6 +16,7 @@ return new class extends Migration
             $table->date('date')->nullable();
             $table->date('date_end')->nullable();
             $table->decimal('price')->nullable();
+            $table->string('price_cur')->nullable();
             $table->string('status')->nullable();
             $table->unsignedBigInteger('subscriber_id');
             $table->foreign('subscriber_id')->references('id')->on('subscribers');

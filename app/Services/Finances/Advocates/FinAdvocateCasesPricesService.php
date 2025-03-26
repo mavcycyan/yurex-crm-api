@@ -88,6 +88,7 @@ class FinAdvocateCasesPricesService extends Service
                         'date' => $price['date'],
                         'date_end' => $price['date_end'],
                         'price' => $price['price'],
+                        'price_cur' => $price['price_cur'],
                         'status' => $price['status']
                     );
                     if (isset($price['name'])) {
@@ -176,6 +177,7 @@ class FinAdvocateCasesPricesService extends Service
                         'date' => $price['date'],
                         'date_end' => $price['date_end'],
                         'price' => $price['price'],
+                        'price_cur' => $price['price_cur'],
                         'status' => $price['status'],
                         'advocate_case_id' => $parent_id,
                     );

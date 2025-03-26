@@ -82,6 +82,7 @@ class FinSubscrWorksPricesService extends Service
                         'date' => $price['date'],
                         'date_end' => $price['date_end'],
                         'price' => $price['price'],
+                        'price_cur' => $price['price_cur'],
                         'status' => $price['status']
                     );
                     FinSubscrWorkPrice::where('id', $price['id'])
@@ -141,6 +142,7 @@ class FinSubscrWorksPricesService extends Service
                         'date' => $price['date'],
                         'date_end' => $price['date_end'],
                         'price' => $price['price'],
+                        'price_cur' => $price['price_cur'],
                         'status' => $price['status'],
                         'subscriber_work_id' => $subscriber_work_id,
                     );

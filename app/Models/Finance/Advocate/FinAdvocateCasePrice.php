@@ -16,6 +16,7 @@ class FinAdvocateCasePrice extends Model
         'date',
         'date_end',
         'price',
+        'price_cur',
         'name',
         'deadlines',
         'status',

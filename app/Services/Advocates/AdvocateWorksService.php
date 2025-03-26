@@ -3,6 +3,7 @@
 namespace App\Services\Advocates;
 
 use App\Models\Advocate\AdvocateWork;
+use App\Models\Auth\User;
 use App\Services\Service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -21,7 +22,37 @@ class AdvocateWorksService extends Service
             $query = self::sorting($input, $query);
             $query = self::pagination($input, $query);
         }
-        $works = $query->get();
+        $users = User::select('id', 'name')->get();
+        $works = $query->get()->map(function ($work) use($users) {
+            $str = '';
+            if ($work->worker && $work->worker !== null) {
+                $ids = unserialize($work->worker);
+                if (is_array($ids) && count($ids) > 0) {
+                    $usrs = $users->whereIn('id', $ids);
+                    if (count($usrs) > 0) {
+                        $index = 0;
+                        foreach ($usrs as $usr) {
+                            if ($index > 0) {
+                                $str .= ', ';
+                            }
+                            $str .= $usr->name;
+                            $index++;
+                        }
+                    }
+                }
+            }
+            $work->workers_names = $str;
+            return [
+                'id' => $work->id,
+                'date' => $work->date,
+                'date_end' => $work->date_end,
+                'name' => $work->name,
+                'result' => $work->result,
+                'worker' => $work->worker,
+                'workers_names' => $work->workers_names,
+                'advocate_case_id' => $work->advocate_case_id,
+            ];
+        });
         $query_count = AdvocateWork::select('*');
         if (isset($input['case_id']) && $input['case_id'] !== '') {
             $query_count->where('advocate_case_id', '=', $input['case_id']);
@@ -35,6 +66,27 @@ class AdvocateWorksService extends Service
 
     public static function show($id, Request $request) {
         $work = AdvocateWork::find($id);
+
+        $users = User::select('id', 'name')->get();
+        $str = '';
+        if ($work->worker && $work->worker !== null) {
+            $ids = unserialize($work->worker);
+            if (is_array($ids) && count($ids) > 0) {
+                $usrs = $users->whereIn('id', $ids);
+                if (count($usrs) > 0) {
+                    $index = 0;
+                    foreach ($usrs as $usr) {
+                        if ($index > 0) {
+                            $str .= ', ';
+                        }
+                        $str .= $usr->name;
+                        $index++;
+                    }
+                }
+            }
+        }
+        $work->workers_names = $str;
+
         $work->what_done = unserialize($work->what_done);
         return self::sendResponse($work, 'Advocate work returned successfully');
     }
@@ -49,6 +101,14 @@ class AdvocateWorksService extends Service
 
         if ($validator->fails()) {
             return self::sendError('Validation Error.', $validator->errors());
+        }
+
+        if (isset($input['worker']) && $input['worker'] !== '') {
+            $worker = array();
+            foreach ($input['worker'] as $wk) {
+                $worker[] = $wk['id'];
+            }
+            $input['worker'] = serialize($worker);
         }
 
         if (isset($input['what_done']) && $input['what_done'] !== '') {
@@ -71,6 +131,13 @@ class AdvocateWorksService extends Service
             return self::sendError('Validation Error.', $validator->errors());
         }
 
+        if (isset($input['worker']) && $input['worker'] !== '') {
+            $worker = array();
+            foreach ($input['worker'] as $wk) {
+                $worker[] = $wk['id'];
+            }
+            $input['worker'] = serialize($worker);
+        }
 
         if (isset($input['what_done']) && $input['what_done'] !== '') {
             $input['what_done'] = serialize($input['what_done']);

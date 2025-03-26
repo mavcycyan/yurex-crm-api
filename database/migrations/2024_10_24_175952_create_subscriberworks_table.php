@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('name')->nullable();
             $table->longText('what_done')->nullable();
             $table->string('result')->nullable();
-            $table->string('worker')->nullable();
+            $table->text('worker')->nullable();
             $table->unsignedBigInteger('subscriber_id');
             $table->foreign('subscriber_id')->references('id')->on('subscribers');
             $table->timestamps();

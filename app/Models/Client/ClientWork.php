@@ -23,6 +23,7 @@ class ClientWork extends Model
 
     protected $casts = [
         'what_done' => 'array',
+        'worker' => 'array',
     ];
 
     public function client(): BelongsTo

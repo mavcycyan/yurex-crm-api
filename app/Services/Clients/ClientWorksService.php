@@ -2,6 +2,8 @@
 
 namespace App\Services\Clients;
 
+use App\Models\Auth\User;
+use App\Models\Client\Client;
 use App\Models\Client\ClientWork;
 use App\Models\Finance\Client\FinClientWorkPrice;
 use App\Services\Finances\Clients\FinClientWorksPaymentsService;
@@ -22,8 +24,27 @@ class ClientWorksService extends Service
             $query = self::pagination($input, $query);
         }
         $query->select('client_works.*');
+        $users = User::select('id', 'name')->get();
         $works = $query->get()
-            ->map(function ($work) {
+            ->map(function ($work) use($users) {
+                $str = '';
+                if ($work->worker && $work->worker !== null) {
+                    $ids = unserialize($work->worker);
+                    if (is_array($ids) && count($ids) > 0) {
+                        $usrs = $users->whereIn('id', $ids);
+                        if (count($usrs) > 0) {
+                            $index = 0;
+                            foreach ($usrs as $usr) {
+                                if ($index > 0) {
+                                    $str .= ', ';
+                                }
+                                $str .= $usr->name;
+                                $index++;
+                            }
+                        }
+                    }
+                }
+                $work->workers_names = $str;
                 return [
                     'id' => $work->id,
                     'visit_date' => $work->visit_date,
@@ -32,6 +53,7 @@ class ClientWorksService extends Service
                     'full_name' => $work->client->full_name,
                     'phone' => $work->client->phone,
                     'result' => $work->result,
+                    'workers_names' => $work->workers_names,
                     'fee' => $work->latestFinClientWorkPrice->price ?? null,
                     'fee_status' => $work->latestFinClientWorkPrice->status ?? null,
                     'client_id' => $work->client_id,
@@ -61,7 +83,26 @@ class ClientWorksService extends Service
             $query = self::sorting($input, $query);
             $query = self::pagination($input, $query);
         }
-        $works = $query->get()->map(function ($work) {
+        $users = User::select('id', 'name')->get();
+        $works = $query->get()->map(function ($work) use ($users) {
+            $str = '';
+            if ($work->worker && $work->worker !== null) {
+                $ids = unserialize($work->worker);
+                if (is_array($ids) && count($ids) > 0) {
+                    $usrs = $users->whereIn('id', $ids);
+                    if (count($usrs) > 0) {
+                        $index = 0;
+                        foreach ($usrs as $usr) {
+                            if ($index > 0) {
+                                $str .= ', ';
+                            }
+                            $str .= $usr->name;
+                            $index++;
+                        }
+                    }
+                }
+            }
+            $work->workers_names = $str;
             return [
                 'id' => $work->id,
                 'visit_date' => $work->visit_date,
@@ -69,6 +110,7 @@ class ClientWorksService extends Service
                 'visit_purpose' => $work->visit_purpose,
                 'result' => $work->result,
                 'worker' => $work->worker,
+                'workers_names' => $work->workers_names,
                 'fee' => $work->latestFinClientWorkPrice->price ?? null,
                 'fee_status' => $work->latestFinClientWorkPrice->status ?? null,
                 'client_id' => $work->client_id,
@@ -85,6 +127,28 @@ class ClientWorksService extends Service
 
     public static function show($id, Request $request) {
         $work = ClientWork::find($id);
+
+        $users = User::select('id', 'name')->get();
+        $str = '';
+        if ($work->worker && $work->worker !== null) {
+            $ids = unserialize($work->worker);
+            if (is_array($ids) && count($ids) > 0) {
+                $usrs = $users->whereIn('id', $ids);
+                if (count($usrs) > 0) {
+                    $index = 0;
+                    foreach ($usrs as $usr) {
+                        if ($index > 0) {
+                            $str .= ', ';
+                        }
+                        $str .= $usr->name;
+                        $index++;
+                    }
+                }
+            }
+        }
+        $work->workers_names = $str;
+
+        $work->worker = unserialize($work->worker);
         $work->what_done = unserialize($work->what_done);
         $work->fee = $work->latestFinClientWorkPrice->price ?? null;
         $work->status = $work->latestFinClientWorkPrice->status ?? null;
@@ -101,6 +165,14 @@ class ClientWorksService extends Service
         ]);
         if ($validator->fails()) {
             return self::sendError('Validation Error.', $validator->errors());
+        }
+
+        if (isset($input['worker']) && $input['worker'] !== '') {
+            $worker = array();
+            foreach ($input['worker'] as $wk) {
+                $worker[] = $wk['id'];
+            }
+            $input['worker'] = serialize($worker);
         }
 
         if (isset($input['what_done']) && $input['what_done'] !== '') {
@@ -135,6 +207,14 @@ class ClientWorksService extends Service
 
         if($validator->fails()){
             return self::sendError('Validation Error.', $validator->errors());
+        }
+
+        if (isset($input['worker']) && $input['worker'] !== '') {
+            $worker = array();
+            foreach ($input['worker'] as $wk) {
+                $worker[] = $wk['id'];
+            }
+            $input['worker'] = serialize($worker);
         }
 
         if (isset($input['what_done']) && $input['what_done'] !== '') {

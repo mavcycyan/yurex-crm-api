@@ -2,6 +2,7 @@
 
 namespace App\Services\Subscribers;
 
+use App\Models\Auth\User;
 use App\Models\Finance\Subscriber\FinSubscrWorkPrice;
 use App\Models\Subscriber\SubscriberWork;
 use App\Services\Finances\Subscribers\FinSubscrWorksPaymentsService;
@@ -24,7 +25,26 @@ class SubscriberWorksService extends Service
             $query = self::sorting($input, $query);
             $query = self::pagination($input, $query);
         }
-        $subscribers = $query->get()->map(function ($work) {
+        $users = User::select('id', 'name')->get();
+        $subscribers = $query->get()->map(function ($work) use($users) {
+            $str = '';
+            if ($work->worker && $work->worker !== null) {
+                $ids = unserialize($work->worker);
+                if (is_array($ids) && count($ids) > 0) {
+                    $usrs = $users->whereIn('id', $ids);
+                    if (count($usrs) > 0) {
+                        $index = 0;
+                        foreach ($usrs as $usr) {
+                            if ($index > 0) {
+                                $str .= ', ';
+                            }
+                            $str .= $usr->name;
+                            $index++;
+                        }
+                    }
+                }
+            }
+            $work->workers_names = $str;
             return [
                 'id' => $work->id,
                 'date' => $work->date,
@@ -32,6 +52,7 @@ class SubscriberWorksService extends Service
                 'name' => $work->name,
                 'result' => $work->result,
                 'worker' => $work->worker,
+                'workers_names' => $work->workers_names,
                 'fee' => $work->latestFinSubscrWorkPrice->price ?? null,
                 'fee_status' => $work->latestFinSubscrWorkPrice->status ?? null,
                 'subscriber_id' => $work->subscriber_id,
@@ -48,6 +69,28 @@ class SubscriberWorksService extends Service
 
     public static function show($id, Request $request) {
         $work = SubscriberWork::find($id);
+
+        $users = User::select('id', 'name')->get();
+        $str = '';
+        if ($work->worker && $work->worker !== null) {
+            $ids = unserialize($work->worker);
+            if (is_array($ids) && count($ids) > 0) {
+                $usrs = $users->whereIn('id', $ids);
+                if (count($usrs) > 0) {
+                    $index = 0;
+                    foreach ($usrs as $usr) {
+                        if ($index > 0) {
+                            $str .= ', ';
+                        }
+                        $str .= $usr->name;
+                        $index++;
+                    }
+                }
+            }
+        }
+        $work->workers_names = $str;
+
+        $work->worker = unserialize($work->worker);
         $work->what_done = unserialize($work->what_done);
         $work->fee = $work->latestFinSubscrWorkPrice->price ?? null;
         $work->status = $work->latestFinSubscrWorkPrice->status ?? null;
@@ -64,6 +107,14 @@ class SubscriberWorksService extends Service
 
         if ($validator->fails()) {
             return self::sendError('Validation Error.', $validator->errors());
+        }
+
+        if (isset($input['worker']) && $input['worker'] !== '') {
+            $worker = array();
+            foreach ($input['worker'] as $wk) {
+                $worker[] = $wk['id'];
+            }
+            $input['worker'] = serialize($worker);
         }
 
         if (isset($input['what_done']) && $input['what_done'] !== '') {
@@ -99,6 +150,13 @@ class SubscriberWorksService extends Service
             return self::sendError('Validation Error.', $validator->errors());
         }
 
+        if (isset($input['worker']) && $input['worker'] !== '') {
+            $worker = array();
+            foreach ($input['worker'] as $wk) {
+                $worker[] = $wk['id'];
+            }
+            $input['worker'] = serialize($worker);
+        }
 
         if (isset($input['what_done']) && $input['what_done'] !== '') {
             $input['what_done'] = serialize($input['what_done']);

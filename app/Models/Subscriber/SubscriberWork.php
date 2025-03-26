@@ -24,6 +24,7 @@ class SubscriberWork extends Model
 
     protected $casts = [
         'what_done' => 'array',
+        'worker' => 'array',
     ];
 
     public function subscriber(): BelongsTo

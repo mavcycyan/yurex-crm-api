@@ -22,6 +22,7 @@ class AdvocateWork extends Model
 
     protected $casts = [
         'what_done' => 'array',
+        'worker' => 'array',
     ];
 
     public function advocate_case(): BelongsTo

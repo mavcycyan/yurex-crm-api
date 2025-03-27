@@ -17,6 +17,8 @@ class FinSubscrWorkPrice extends Model
         'date_end',
         'price',
         'price_cur',
+        'name',
+        'deadlines',
         'status',
         'subscriber_work_id'
     ];

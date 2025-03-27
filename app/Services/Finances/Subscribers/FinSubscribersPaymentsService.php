@@ -41,7 +41,6 @@ class FinSubscribersPaymentsService extends Service
             return false;
         }
 
-//        $input['date'] = Carbon::createFromFormat('Y-m-d', $input['date']);
         $payment = FinSubscriberPayment::create($input);
         return $payment;
     }

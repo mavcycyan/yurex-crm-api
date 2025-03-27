@@ -17,6 +17,8 @@ class FinClientWorkPrice extends Model
         'date_end',
         'price',
         'price_cur',
+        'name',
+        'deadlines',
         'status',
         'client_work_id'
     ];

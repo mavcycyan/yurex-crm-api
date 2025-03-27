@@ -41,7 +41,6 @@ class FinClientWorksPaymentsService extends Service
             return false;
         }
 
-        $input['date'] = $input['date'];
         $payment = FinClientWorkPayment::create($input);
         return $payment;
     }

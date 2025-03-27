@@ -42,7 +42,6 @@ class FinSubscrWorksPaymentsService extends Service
             return false;
         }
 
-//        $input['date'] = Carbon::createFromFormat('Y-m-d', $input['date']);
         $payment = FinSubscrWorkPayment::create($input);
         return $payment;
     }

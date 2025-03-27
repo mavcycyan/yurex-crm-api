@@ -20,10 +20,17 @@ class FinClientWorksPricesService extends Service
             $request['parent_id'] !== ''
         ) {
             $prices = FinClientWorkPrice::with('payments')
+            ->select('*')
             ->where('client_work_id', $request['parent_id'])
-            ->get();
+            ->get()->map(function ($item) {
+                    $item->deadlines = !empty($item->deadlines) ? unserialize($item->deadlines) : null;
+                    return $item;
+                });
         } else {
-            $prices = FinClientWorkPrice::all();
+            $prices = FinClientWorkPrice::all()->map(function ($item) {
+                $item->deadlines = !empty($item->deadlines) ? unserialize($item->deadlines) : null;
+                return $item;
+            });
         }
         return self::sendResponse($prices->toArray(), 'Prices and payments returned successfully');
     }
@@ -61,46 +68,6 @@ class FinClientWorksPricesService extends Service
     }
 
     public static function bulk_update(Request $request) {
-        /*
-{
-    "prices": [
-        {
-            "id": 2,
-            "date": "2025-02-20",
-            "date_end": "2025-02-22",
-            "price": "1500.00",
-            "status": "payed",
-            "payments": [
-                {
-                    "id": 1,
-                    "amount": "500.00",
-                    "date": "2025-01-28"
-                }
-            ]
-        },
-        {
-            "id": null,
-            "date": "2025-02-20",
-            "date_end": "2025-02-22",
-            "price": "2000",
-            "status": "",
-            "payments": [
-                {
-                    "id": null,
-                    "amount": "1000",
-                    "date": "2025-02-10"
-                },
-                {
-                    "id": null,
-                    "amount": "500",
-                    "date": "2025-02-12"
-                }
-            ]
-        }
-    ],
-    "parent_id": 9
-}
-         * */
         $input = $request->all();
         $client_work_id = $input['parent_id'];
 
@@ -124,6 +91,12 @@ class FinClientWorksPricesService extends Service
                         'price_cur' => $price['price_cur'],
                         'status' => $price['status']
                     );
+                    if (isset($price['name'])) {
+                        $update['name'] = $price['name'];
+                    }
+                    if (isset($price['deadlines']) && $price['deadlines'] !== '') {
+                        $update['deadlines'] = serialize($price['deadlines']);
+                    }
                     FinClientWorkPrice::where('id', $price['id'])
                         ->update($update);
 
@@ -141,8 +114,20 @@ class FinClientWorksPricesService extends Service
                         }
                         if (count($payments) > 0) {
                             foreach ($payments as $pay) {
+                                $amount_currency = '';
+                                $amount_currency_val = '';
+                                if (isset($pay['amount_currency']) && $pay['amount_currency'] !== null && $pay['amount_currency'] !== '') {
+                                    $amount_currency = $pay['amount_currency'];
+                                }
+                                if (isset($pay['amount_currency_val']) && $pay['amount_currency_val'] !== null && $pay['amount_currency_val'] !== '') {
+                                    $amount_currency_val = $pay['amount_currency_val'];
+                                }
+                                $params = ['date' => $pay['date'], 'amount' => $pay['amount']];
+                                if ($amount_currency !== '' && $amount_currency_val !== '') {
+                                    $params['amount_currency'] = $amount_currency . ' ' . $amount_currency_val;
+                                }
                                 FinClientWorkPayment::where('id', $pay['id'])
-                                    ->update(['date' => $pay['date'], 'amount' => $pay['amount']]);
+                                    ->update($params);
                             }
                             $p_ids = collect($payments)->pluck('id')->toArray();
                             FinClientWorkPayment::whereNotIn('id', $p_ids)
@@ -157,6 +142,17 @@ class FinClientWorksPricesService extends Service
                                     'amount' => $pay['amount'],
                                     'fin_client_work_price_id' => $price['id'],
                                 );
+                                $amount_currency = '';
+                                $amount_currency_val = '';
+                                if (isset($pay['amount_currency']) && $pay['amount_currency'] !== null && $pay['amount_currency'] !== '') {
+                                    $amount_currency = $pay['amount_currency'];
+                                }
+                                if (isset($pay['amount_currency_val']) && $pay['amount_currency_val'] !== null && $pay['amount_currency_val'] !== '') {
+                                    $amount_currency_val = $pay['amount_currency_val'];
+                                }
+                                if ($amount_currency !== '' && $amount_currency_val !== '') {
+                                    $data['amount_currency'] = $amount_currency . ' ' . $amount_currency_val;
+                                }
                                 FinClientWorkPayment::create($data);
                             }
                         }

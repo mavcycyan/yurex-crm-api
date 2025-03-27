@@ -21,10 +21,17 @@ class FinSubscrWorksPricesService extends Service
             $request['parent_id'] !== ''
         ) {
             $prices = FinSubscrWorkPrice::with('payments')
+            ->select('*')
             ->where('subscriber_work_id', $request['parent_id'])
-            ->get();
+            ->get()->map(function ($item) {
+                    $item->deadlines = !empty($item->deadlines) ? unserialize($item->deadlines) : null;
+                    return $item;
+                });
         } else {
-            $prices = FinSubscrWorkPrice::all();
+            $prices = FinSubscrWorkPrice::all()->map(function ($item) {
+                $item->deadlines = !empty($item->deadlines) ? unserialize($item->deadlines) : null;
+                return $item;
+            });
         }
         return self::sendResponse($prices->toArray(), 'Prices and payments returned successfully');
     }
@@ -85,6 +92,12 @@ class FinSubscrWorksPricesService extends Service
                         'price_cur' => $price['price_cur'],
                         'status' => $price['status']
                     );
+                    if (isset($price['name'])) {
+                        $update['name'] = $price['name'];
+                    }
+                    if (isset($price['deadlines']) && $price['deadlines'] !== '') {
+                        $update['deadlines'] = serialize($price['deadlines']);
+                    }
                     FinSubscrWorkPrice::where('id', $price['id'])
                         ->update($update);
 
@@ -102,8 +115,20 @@ class FinSubscrWorksPricesService extends Service
                         }
                         if (count($payments) > 0) {
                             foreach ($payments as $pay) {
+                                $amount_currency = '';
+                                $amount_currency_val = '';
+                                if (isset($pay['amount_currency']) && $pay['amount_currency'] !== null && $pay['amount_currency'] !== '') {
+                                    $amount_currency = $pay['amount_currency'];
+                                }
+                                if (isset($pay['amount_currency_val']) && $pay['amount_currency_val'] !== null && $pay['amount_currency_val'] !== '') {
+                                    $amount_currency_val = $pay['amount_currency_val'];
+                                }
+                                $params = ['date' => $pay['date'], 'amount' => $pay['amount']];
+                                if ($amount_currency !== '' && $amount_currency_val !== '') {
+                                    $params['amount_currency'] = $amount_currency . ' ' . $amount_currency_val;
+                                }
                                 FinSubscrWorkPayment::where('id', $pay['id'])
-                                    ->update(['date' => $pay['date'], 'amount' => $pay['amount']]);
+                                    ->update($params);
                             }
                             $p_ids = collect($payments)->pluck('id')->toArray();
                             FinSubscrWorkPayment::whereNotIn('id', $p_ids)
@@ -118,6 +143,17 @@ class FinSubscrWorksPricesService extends Service
                                     'amount' => $pay['amount'],
                                     'fin_subscr_work_price_id' => $price['id'],
                                 );
+                                $amount_currency = '';
+                                $amount_currency_val = '';
+                                if (isset($pay['amount_currency']) && $pay['amount_currency'] !== null && $pay['amount_currency'] !== '') {
+                                    $amount_currency = $pay['amount_currency'];
+                                }
+                                if (isset($pay['amount_currency_val']) && $pay['amount_currency_val'] !== null && $pay['amount_currency_val'] !== '') {
+                                    $amount_currency_val = $pay['amount_currency_val'];
+                                }
+                                if ($amount_currency !== '' && $amount_currency_val !== '') {
+                                    $data['amount_currency'] = $amount_currency . ' ' . $amount_currency_val;
+                                }
                                 FinSubscrWorkPayment::create($data);
                             }
                         }

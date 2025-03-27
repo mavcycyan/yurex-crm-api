@@ -11,7 +11,7 @@ class FinClientWorkPayment extends Model
     use HasFactory;
 
     protected $fillable = [
-        'date', 'amount', 'fin_client_work_price_id'
+        'date', 'amount', 'amount_currency', 'fin_client_work_price_id'
     ];
 
     public function price(): BelongsTo

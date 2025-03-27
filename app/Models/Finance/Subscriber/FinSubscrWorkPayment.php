@@ -11,7 +11,7 @@ class FinSubscrWorkPayment extends Model
     use HasFactory;
 
     protected $fillable = [
-        'date', 'amount', 'fin_subscr_work_price_id'
+        'date', 'amount', 'amount_currency', 'fin_subscr_work_price_id'
     ];
 
     public function price(): BelongsTo

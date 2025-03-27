@@ -181,6 +181,12 @@ class FinClientWorksPricesService extends Service
                         'status' => $price['status'],
                         'client_work_id' => $client_work_id,
                     );
+                    if (isset($price['name'])) {
+                        $data_pr['name'] = $price['name'];
+                    }
+                    if (isset($price['deadlines']) && $price['deadlines'] !== '') {
+                        $data_pr['deadlines'] = serialize($price['deadlines']);
+                    }
                     $new_pr = FinClientWorkPrice::create($data_pr);
 
                     // payments

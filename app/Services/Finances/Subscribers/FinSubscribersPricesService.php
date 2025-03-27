@@ -181,6 +181,12 @@ class FinSubscribersPricesService extends Service
                         'status' => $price['status'],
                         'subscriber_id' => $subscriber_id,
                     );
+                    if (isset($price['name'])) {
+                        $data_pr['name'] = $price['name'];
+                    }
+                    if (isset($price['deadlines']) && $price['deadlines'] !== '') {
+                        $data_pr['deadlines'] = serialize($price['deadlines']);
+                    }
                     $new_pr = FinSubscriberPrice::create($data_pr);
 
                     // payments

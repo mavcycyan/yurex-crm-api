@@ -73,6 +73,7 @@ Route::middleware(['auth:sanctum', 'role:root,director,lawyer'])->group(function
         'edit', 'create'
     ]);
     Route::get('/lawyer_advocates', [AdvocatesController::class, 'index']);
+    Route::get('/lawyer_workers', [UsersController::class, 'get_workers']);
 
     Route::post('/subscriber_works/{id}/files', [FilesSubscriberWorks::class, 'upload']);
     Route::delete('/subscriber_works/{workid}/files/{id}', [FilesSubscriberWorks::class, 'destroy']);

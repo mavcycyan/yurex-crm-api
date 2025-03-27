@@ -22,6 +22,17 @@ class UsersService extends Service
         $count = User::select('*')->get()->count();
         return self::sendResponse($users->toArray(), 'Users returned successfully', $count);
     }
+    public static function get_workers(Request $request) {
+        $query = User::select('*')->whereNot('role_id', 1);
+        $input = $request->all();
+        if (count($input) > 0) {
+            $query = self::sorting($input, $query);
+            $query = self::pagination($input, $query);
+        }
+        $users = $query->get();
+        $count = User::select('*')->whereNot('role_id', 1)->get()->count();
+        return self::sendResponse($users->toArray(), 'Users returned successfully', $count);
+    }
 
     public static function show($id, Request $request) {
         $user = User::find($id);

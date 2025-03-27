@@ -21,4 +21,7 @@ class UsersController extends Controller
     public function destroy($id) {
         return UsersService::destroy($id);
     }
+    public function get_workers(Request $request) {
+        return UsersService::get_workers($request);
+    }
 }

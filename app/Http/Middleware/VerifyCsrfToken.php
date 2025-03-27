@@ -21,6 +21,7 @@ class VerifyCsrfToken extends Middleware
 
         'api/lawyer_advocates_cases',
         'api/lawyer_advocates_categories',
+        'api/lawyer_workers',
 
         'api/subscribers',
         'api/subscribers/*',

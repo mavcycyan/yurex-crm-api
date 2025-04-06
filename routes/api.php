@@ -41,6 +41,7 @@ Route::middleware(['auth:sanctum', 'role:root,director'])->group(function () {
     Route::get('/users', [UsersController::class, 'index']);
     Route::get('/users/{id}', [UsersController::class, 'show']);
     Route::put('/users/{id}', [UsersController::class, 'update']);
+    Route::put('/users/activity/{id}', [UsersController::class, 'activity']);
     Route::delete('/users/{id}', [UsersController::class, 'destroy']);
 });
 
@@ -63,6 +64,11 @@ Route::middleware(['auth:sanctum', 'role:root,director,lawyer'])->group(function
     Route::get('/lawyer_advocates_categories', [AdvocateCategoriesController::class, 'index']);
     Route::get('/lawyer_advocates_cases', [AdvocateCasesController::class, 'index']);
 });
+Route::middleware(['auth:sanctum', 'role:root,director'])->group(function () {
+    Route::put('/clients/activity/{id}', [ClientsController::class, 'activity']);
+    Route::get('/archive/clients', [ClientsController::class, 'archive']);
+//    Route::put('/client_works/activity/{id}', [ClientWorksController::class, 'activity']);
+});
 
 //subscribers routes
 Route::middleware(['auth:sanctum', 'role:root,director,lawyer'])->group(function () {
@@ -78,6 +84,10 @@ Route::middleware(['auth:sanctum', 'role:root,director,lawyer'])->group(function
     Route::post('/subscriber_works/{id}/files', [FilesSubscriberWorks::class, 'upload']);
     Route::delete('/subscriber_works/{workid}/files/{id}', [FilesSubscriberWorks::class, 'destroy']);
     Route::get('/subscriber_works/{id}/files', [FilesSubscriberWorks::class, 'getFiles']);
+});
+Route::middleware(['auth:sanctum', 'role:root,director'])->group(function () {
+    Route::put('/subscribers/activity/{id}', [SubscribersController::class, 'activity']);
+    Route::get('/archive/subscribers', [SubscribersController::class, 'archive']);
 });
 
 //advocates routes
@@ -106,6 +116,10 @@ Route::middleware(['auth:sanctum', 'role:root,director,advocate'])->group(functi
     Route::resource('/advocates_clients', ClientsController::class)->except([
         'edit', 'create'
     ]);
+});
+Route::middleware(['auth:sanctum', 'role:root,director'])->group(function () {
+    Route::put('/advocates_cases/activity/{id}', [AdvocateCasesController::class, 'activity']);
+    Route::get('/archive/advocates_cases', [AdvocateCasesController::class, 'archive']);
 });
 
 //finance routes

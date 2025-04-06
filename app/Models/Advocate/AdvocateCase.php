@@ -15,7 +15,7 @@ class AdvocateCase extends Model
     use HasFactory;
 
     protected $fillable = [
-        'visit_date', 'visit_date_end', 'advocates', 'clients', 'proc_num', 'plot', 'plot_big', 'result', 'advocate_category_id', 'advocate_id', 'client_id'
+        'visit_date', 'visit_date_end', 'advocates', 'clients', 'proc_num', 'plot', 'plot_big', 'result', 'advocate_category_id', 'advocate_id', 'client_id', 'inactive'
     ];
 
     protected $casts = [

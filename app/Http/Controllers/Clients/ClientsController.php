@@ -12,6 +12,9 @@ class ClientsController extends Controller
     public function index(Request $request) {
         return ClientsService::index($request);
     }
+    public function archive(Request $request) {
+        return ClientsService::archive($request);
+    }
     public function show($id, Request $request) {
         return ClientsService::show($id, $request);
     }
@@ -20,6 +23,9 @@ class ClientsController extends Controller
     }
     public function update($id, Request $request) {
         return ClientsService::update($id, $request);
+    }
+    public function activity(Request $request, $id) {
+        return ClientsService::activity($request, $id);
     }
     public function destroy($id) {
         return ClientsService::destroy($id);

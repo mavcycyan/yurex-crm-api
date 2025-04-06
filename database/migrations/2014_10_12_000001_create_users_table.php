@@ -25,6 +25,7 @@ return new class extends Migration
             $table->rememberToken();
             $table->unsignedBigInteger('role_id');
             $table->foreign('role_id')->references('id')->on('roles')->onDelete('cascade');
+            $table->integer('inactive')->default(0);
             $table->timestamps();
         });
     }

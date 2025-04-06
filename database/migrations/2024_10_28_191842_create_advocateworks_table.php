@@ -22,6 +22,7 @@ return new class extends Migration
             $table->text('worker')->nullable();
             $table->unsignedBigInteger('advocate_case_id');
             $table->foreign('advocate_case_id')->references('id')->on('advocate_cases');
+            $table->integer('inactive')->default(0);
             $table->timestamps();
         });
     }

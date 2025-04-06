@@ -28,6 +28,7 @@ return new class extends Migration
             $table->string('holder')->nullable();
             $table->text('info')->nullable();
             $table->foreign('responsible_person_id')->references('id')->on('users');
+            $table->integer('inactive')->default(0);
             $table->timestamps();
         });
     }

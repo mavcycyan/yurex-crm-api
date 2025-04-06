@@ -24,6 +24,7 @@ class ClientsService extends Service
                 ]);
             }
         }
+        $query->where('inactive', '=', 0);
         $clients = $query->get()
             ->map(function ($work) {
                 return [
@@ -37,7 +38,38 @@ class ClientsService extends Service
                     'worker' => $work->worker
                 ];
             });
-        $count = Client::select('*')->get()->count();
+        $count = Client::select('*')->where('inactive', '=', 0)->get()->count();
+        return self::sendResponse($clients->toArray(), 'Clients returned successfully', $count);
+    }
+    public static function archive(Request $request) {
+        $query = Client::select('*');
+        $input = $request->all();
+        if (count($input) > 0) {
+            $query = self::sorting($input, $query);
+            $query = self::pagination($input, $query);
+            if (isset($input['with_pending'])) {
+                $query->withCount([
+                    'client_works as pending_works' => function ($query) {
+                        $query->where('result', 'pending');
+                    }
+                ]);
+            }
+        }
+        $query->where('inactive', '=', 1);
+        $clients = $query->get()
+            ->map(function ($work) {
+                return [
+                    'id' => $work->id,
+                    'full_name' => $work->full_name,
+                    'phone' => $work->phone,
+                    'address' => $work->address,
+                    'visit_date' => $work->oldestWork->visit_date ?? null,
+                    'visit_purpose' => $work->oldestWork->visit_purpose ?? null,
+                    'pending_works' => $work->pending_works,
+                    'worker' => $work->worker
+                ];
+            });
+        $count = Client::select('*')->where('inactive', '=', 1)->get()->count();
         return self::sendResponse($clients->toArray(), 'Clients returned successfully', $count);
     }
 
@@ -90,6 +122,25 @@ class ClientsService extends Service
         $client->save();
 
         return self::sendResponse($client, 'Client "' . $client->full_name . '" updated successfully.');
+    }
+
+    public static function activity(Request $request, $id) {
+        $input = $request->all();
+        $client = Client::find($id);
+
+        $validator = Validator::make($input, [
+            'inactive' => 'required',
+        ]);
+
+        if($validator->fails()){
+            return self::sendError('Validation Error.', $validator->errors());
+        }
+
+        $client->inactive = $input['inactive'];
+
+        $client->save();
+
+        return self::sendResponse($client, 'Client "' . $client->full_name . '" inactive status changed to "' . $input['inactive'] . '" successfully.');
     }
 
     public static function destroy($id) {

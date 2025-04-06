@@ -23,6 +23,7 @@ class SubscribersService extends Service
             $query = self::pagination($input, $query);
         }
         $users = User::where('role_id', '=', 4)->get();
+        $query->where('inactive', '=', 0);
         $subscribers = $query->get()
             ->map(function ($work) use ($users) {
                 $user = $users->where('id', $work->responsible_person_id)->first();
@@ -44,7 +45,40 @@ class SubscribersService extends Service
                     'fee_status' => $work->latestFinSubscriberPrice->status ?? null,
                 ];
             });
-        $count = Subscriber::select('*')->get()->count();
+        $count = Subscriber::select('*')->where('inactive', '=', 0)->get()->count();
+        return self::sendResponse($subscribers->toArray(), 'Subscribers returned successfully', $count);
+    }
+    public static function archive(Request $request) {
+        $query = Subscriber::select('*');
+        $input = $request->all();
+        if (count($input) > 0) {
+            $query = self::sorting($input, $query);
+            $query = self::pagination($input, $query);
+        }
+        $users = User::where('role_id', '=', 4)->get();
+        $query->where('inactive', '=', 1);
+        $subscribers = $query->get()
+            ->map(function ($work) use ($users) {
+                $user = $users->where('id', $work->responsible_person_id)->first();
+                return [
+                    'id' => $work->id,
+                    'name' => $work->name,
+                    'edrpou' => $work->edrpou,
+                    'responsible_person' => $user->name ?? null,
+                    'contract_date' => $work->contract_date,
+                    'contact_person_name' => $work->contact_person_name,
+                    'contact_person_phone' => $work->contact_person_phone,
+                    'director_person_name' => $work->director_person_name,
+                    'director_person_phone' => $work->director_person_phone,
+                    'accountant_person_name' => $work->accountant_person_name,
+                    'accountant_person_phone' => $work->accountant_person_phone,
+                    'legal_address' => $work->legal_address,
+                    'actual_address' => $work->actual_address,
+                    'fee' => $work->latestFinSubscriberPrice->price ?? null,
+                    'fee_status' => $work->latestFinSubscriberPrice->status ?? null,
+                ];
+            });
+        $count = Subscriber::select('*')->where('inactive', '=', 1)->get()->count();
         return self::sendResponse($subscribers->toArray(), 'Subscribers returned successfully', $count);
     }
 
@@ -121,6 +155,25 @@ class SubscribersService extends Service
         $subscriber->save();
 
         return self::sendResponse($subscriber, 'Subscriber "' . $subscriber->name . '" updated successfully.');
+    }
+
+    public static function activity(Request $request, $id) {
+        $input = $request->all();
+        $subscriber = Subscriber::find($id);
+
+        $validator = Validator::make($input, [
+            'inactive' => 'required',
+        ]);
+
+        if($validator->fails()){
+            return self::sendError('Validation Error.', $validator->errors());
+        }
+
+        $subscriber->inactive = $input['inactive'];
+
+        $subscriber->save();
+
+        return self::sendResponse($subscriber, 'Subscriber "' . $subscriber->full_name . '" inactive status changed to "' . $input['inactive'] . '" successfully.');
     }
 
     public static function destroy($id) {

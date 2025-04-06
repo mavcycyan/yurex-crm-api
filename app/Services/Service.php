@@ -48,6 +48,7 @@ class Service
         if (isset($params['sort_dir']) && $params['sort_dir'] !== null) {
             $dir = $params['sort_dir'];
         }
+
         if (isset($params['sort_field']) && $params['sort_field'] !== null) {
             $field = $params['sort_field'];
             $query->orderBy($field, $dir);

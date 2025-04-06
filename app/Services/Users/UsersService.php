@@ -7,6 +7,7 @@ use App\Services\Service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class UsersService extends Service
@@ -14,10 +15,13 @@ class UsersService extends Service
     public static function index(Request $request) {
         $query = User::select('*');
         $input = $request->all();
+        // pushing all inactive items of any types to the end of the list
+        $query->orderBy('inactive', 'asc');
         if (count($input) > 0) {
             $query = self::sorting($input, $query);
             $query = self::pagination($input, $query);
         }
+
         $users = $query->get();
         $count = User::select('*')->get()->count();
         return self::sendResponse($users->toArray(), 'Users returned successfully', $count);
@@ -63,6 +67,25 @@ class UsersService extends Service
         $user->save();
 
         return self::sendResponse($user, 'User "' . $user->name . '" updated successfully.');
+    }
+
+    public static function activity(Request $request, $id) {
+        $input = $request->all();
+        $user = User::find($id);
+
+        $validator = Validator::make($input, [
+            'inactive' => 'required',
+        ]);
+
+        if($validator->fails()){
+            return self::sendError('Validation Error.', $validator->errors());
+        }
+
+        $user->inactive = $input['inactive'];
+
+        $user->save();
+
+        return self::sendResponse($user, 'User "' . $user->name . '" inactive status changed to "' . $input['inactive'] . '" successfully.');
     }
 
     public static function destroy($id) {

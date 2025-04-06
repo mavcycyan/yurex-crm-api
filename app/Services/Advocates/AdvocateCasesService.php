@@ -13,6 +13,7 @@ use App\Services\Finances\Advocates\FinAdvocateCasesPricesService;
 use App\Services\Service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class AdvocateCasesService extends Service
@@ -45,6 +46,7 @@ class AdvocateCasesService extends Service
                     $query->select('advocate_cases.*');
                     $advocates = User::select('id', 'name')->where('role_id', '=', 4)->get();
                     $clients = Client::select('id', 'full_name')->get();
+                    $query->where('advocate_cases.inactive', '=', 0);
                     $cases = $query->get()
                         ->map(function ($case) use ($advocates, $clients) {
                             $str = '';
@@ -105,7 +107,7 @@ class AdvocateCasesService extends Service
                     if (count($input) > 0) {
                         $count_query = self::filtering($input, $count_query);
                     }
-                    $count = $count_query->get()->count();
+                    $count = $count_query->where('advocate_cases.inactive', '=', 0)->get()->count();
                 }
             } else {
                 return self::sendError('Wrong advocate category slug');
@@ -127,6 +129,7 @@ class AdvocateCasesService extends Service
             }
             $query->select('advocate_cases.*');
             $advocates = User::where('role_id', '=', 4)->get();
+            $query->where('advocate_cases.inactive', '=', 0);
             $cases = $query->get()
                 ->map(function ($case) use ($advocates) {
                     $str = '';
@@ -165,7 +168,7 @@ class AdvocateCasesService extends Service
             if (count($input) > 0) {
                 $count_query = self::filtering($input, $count_query);
             }
-            $count = $count_query->get()->count();
+            $count = $count_query->where('advocate_cases.inactive', '=', 0)->get()->count();
         } else {
             $query = AdvocateCase::select('*');
             $input = $request->all();
@@ -175,6 +178,7 @@ class AdvocateCasesService extends Service
                 $query = self::pagination($input, $query);
             }
             $advocates = User::where('role_id', '=', 4)->get();
+            $query->where('advocate_cases.inactive', '=', 0);
             $cases = $query->get()
                 ->map(function ($work) use ($advocates) {
                     $str = '';
@@ -203,6 +207,7 @@ class AdvocateCasesService extends Service
                         'result' => $work->result,
                         'fee' => $work->latestFinAdvocateCasePrice->price ?? null,
                         'fee_status' => $work->latestFinAdvocateCasePrice->status ?? null,
+                        'advocate_name' => $case->advocate->name ?? null,
                         'advocate_category_id' => $work->advocate_category_id,
                         'advocate_id' => $work->advocate_id,
                         'client_name' => $case->client->full_name ?? null,
@@ -212,8 +217,60 @@ class AdvocateCasesService extends Service
             if (count($input) > 0) {
                 $count_query = self::filtering($input, $count_query);
             }
-            $count = $count_query->get()->count();
+            $count = $count_query->where('advocate_cases.inactive', '=', 0)->get()->count();
         }
+        $response_extras = ['response' => 'cases'];
+        return self::sendResponse($cases->toArray(), 'Advocate cases returned successfully', $count, $response_extras);
+    }
+    public static function archive(Request $request) {
+        $query = AdvocateCase::select('*');
+        $input = $request->all();
+        if (count($input) > 0) {
+            $query = self::filtering($input, $query);
+            $query = self::sorting($input, $query);
+            $query = self::pagination($input, $query);
+        }
+        $advocates = User::where('role_id', '=', 4)->get();
+        $query->where('advocate_cases.inactive', '=', 1);
+        $cases = $query->get()
+            ->map(function ($work) use ($advocates) {
+                $str = '';
+                if ($work->advocates && $work->advocates !== null) {
+                    $ids = unserialize($work->advocates);
+                    if ($work->advocates && $work->advocates !== null) {
+                        $users = $advocates->whereIn('id', $ids);
+                        if (count($users) > 0) {
+                            foreach ($users as $key => $user) {
+                                if ($key > 0) {
+                                    $str .= ', ';
+                                }
+                                $str .= $user->name;
+                            }
+                        }
+                    }
+                }
+                $work->advocates_names = $str;
+                return [
+                    'id' => $work->id,
+                    'visit_date' => $work->visit_date,
+                    'visit_date_end' => $work->visit_date_end,
+                    'advocates_names' => $work->advocates_names,
+                    'proc_num' => $work->proc_num,
+                    'plot' => $work->plot,
+                    'result' => $work->result,
+                    'fee' => $work->latestFinAdvocateCasePrice->price ?? null,
+                    'fee_status' => $work->latestFinAdvocateCasePrice->status ?? null,
+                    'advocate_name' => $work->advocate->name ?? null,
+                    'advocate_category_id' => $work->advocate_category_id,
+                    'advocate_id' => $work->advocate_id,
+                    'client_name' => $case->client->full_name ?? null,
+                ];
+            });
+        $count_query = AdvocateCase::select('*');
+        if (count($input) > 0) {
+            $count_query = self::filtering($input, $count_query);
+        }
+        $count = $count_query->where('advocate_cases.inactive', '=', 1)->get()->count();
         $response_extras = ['response' => 'cases'];
         return self::sendResponse($cases->toArray(), 'Advocate cases returned successfully', $count, $response_extras);
     }
@@ -310,6 +367,25 @@ class AdvocateCasesService extends Service
         $case->save();
 
         return self::sendResponse($case, 'Advocate case "' . $case->visit_date . '" updated successfully.');
+    }
+
+    public static function activity(Request $request, $id) {
+        $input = $request->all();
+        $case = AdvocateCase::find($id);
+
+        $validator = Validator::make($input, [
+            'inactive' => 'required',
+        ]);
+
+        if($validator->fails()){
+            return self::sendError('Validation Error.', $validator->errors());
+        }
+
+        $case->inactive = $input['inactive'];
+
+        $case->save();
+
+        return self::sendResponse($case, 'Advocate case "' . $case->plot . '" inactive status changed to "' . $input['inactive'] . '" successfully.');
     }
 
     public static function destroy($id) {

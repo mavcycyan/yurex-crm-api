@@ -21,6 +21,7 @@ return new class extends Migration
             $table->text('worker')->nullable();
             $table->unsignedBigInteger('client_id');
             $table->foreign('client_id')->references('id')->on('clients');
+            $table->integer('inactive')->default(0);
             $table->timestamps();
         });
     }

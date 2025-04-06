@@ -21,6 +21,7 @@ return new class extends Migration
             $table->text('worker')->nullable();
             $table->unsignedBigInteger('subscriber_id');
             $table->foreign('subscriber_id')->references('id')->on('subscribers');
+            $table->integer('inactive')->default(0);
             $table->timestamps();
         });
     }

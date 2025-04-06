@@ -11,6 +11,9 @@ class AdvocateCasesController extends Controller
     public function index(Request $request) {
         return AdvocateCasesService::index($request);
     }
+    public function archive(Request $request) {
+        return AdvocateCasesService::archive($request);
+    }
     public function show($id, Request $request) {
         return AdvocateCasesService::show($id, $request);
     }
@@ -19,6 +22,9 @@ class AdvocateCasesController extends Controller
     }
     public function update(Request $request, string $case) {
         return AdvocateCasesService::update($request, $case);
+    }
+    public function activity(Request $request, $id) {
+        return AdvocateCasesService::activity($request, $id);
     }
     public function destroy($id) {
         return AdvocateCasesService::destroy($id);

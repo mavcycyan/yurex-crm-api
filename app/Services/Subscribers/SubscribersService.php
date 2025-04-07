@@ -21,6 +21,13 @@ class SubscribersService extends Service
         if (count($input) > 0) {
             $query = self::sorting($input, $query);
             $query = self::pagination($input, $query);
+            if (isset($input['with_pending'])) {
+                $query->withCount([
+                    'subscriber_works as pending_works' => function ($query) {
+                        $query->where('result', 'pending');
+                    }
+                ]);
+            }
         }
         $users = User::where('role_id', '=', 4)->get();
         $query->where('inactive', '=', 0);
@@ -41,6 +48,7 @@ class SubscribersService extends Service
                     'accountant_person_phone' => $work->accountant_person_phone,
                     'legal_address' => $work->legal_address,
                     'actual_address' => $work->actual_address,
+                    'pending_works' => $work->pending_works,
                     'fee' => $work->latestFinSubscriberPrice->price ?? null,
                     'fee_status' => $work->latestFinSubscriberPrice->status ?? null,
                 ];

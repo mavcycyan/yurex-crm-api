@@ -20,6 +20,7 @@ class FinClientWorkPrice extends Model
         'name',
         'deadlines',
         'status',
+        'info',
         'client_work_id'
     ];
 

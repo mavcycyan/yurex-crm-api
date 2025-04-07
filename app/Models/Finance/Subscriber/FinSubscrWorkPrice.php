@@ -20,6 +20,7 @@ class FinSubscrWorkPrice extends Model
         'name',
         'deadlines',
         'status',
+        'info',
         'subscriber_work_id'
     ];
 

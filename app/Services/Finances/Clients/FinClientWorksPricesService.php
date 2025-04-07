@@ -94,6 +94,9 @@ class FinClientWorksPricesService extends Service
                     if (isset($price['name'])) {
                         $update['name'] = $price['name'];
                     }
+                    if (isset($price['info'])) {
+                        $update['info'] = $price['info'];
+                    }
                     if (isset($price['deadlines']) && $price['deadlines'] !== '') {
                         $update['deadlines'] = serialize($price['deadlines']);
                     }
@@ -183,6 +186,9 @@ class FinClientWorksPricesService extends Service
                     );
                     if (isset($price['name'])) {
                         $data_pr['name'] = $price['name'];
+                    }
+                    if (isset($price['info'])) {
+                        $data_pr['info'] = $price['info'];
                     }
                     if (isset($price['deadlines']) && $price['deadlines'] !== '') {
                         $data_pr['deadlines'] = serialize($price['deadlines']);

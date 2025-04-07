@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('name')->nullable();
             $table->longText('deadlines')->nullable();
             $table->string('status')->nullable();
+            $table->text('info')->nullable();
             $table->unsignedBigInteger('advocate_case_id');
             $table->foreign('advocate_case_id')->references('id')->on('advocate_cases');
             $table->timestamps();

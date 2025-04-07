@@ -20,6 +20,7 @@ class FinAdvocateCasePrice extends Model
         'name',
         'deadlines',
         'status',
+        'info',
         'advocate_case_id'
     ];
 

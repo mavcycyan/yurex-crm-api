@@ -18,6 +18,7 @@ return new class extends Migration
             $table->decimal('price')->nullable();
             $table->string('price_cur')->nullable();
             $table->string('status')->nullable();
+            $table->text('info')->nullable();
             $table->unsignedBigInteger('subscriber_work_id');
             $table->foreign('subscriber_work_id')->references('id')->on('subscriber_works');
             $table->timestamps();

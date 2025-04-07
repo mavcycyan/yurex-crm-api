@@ -20,6 +20,7 @@ class FinSubscriberPrice extends Model
         'name',
         'deadlines',
         'status',
+        'info',
         'subscriber_id'
     ];
 

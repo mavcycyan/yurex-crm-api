@@ -11,7 +11,7 @@ class Client extends Model
     use HasFactory;
 
     protected $fillable = [
-        'full_name', 'where_knows', 'birthday', 'address', 'phone', 'worker', 'inactive'
+        'full_name', 'where_knows', 'birthday', 'address', 'phone', 'worker', 'review', 'inactive'
     ];
 
     public function client_works(): HasMany

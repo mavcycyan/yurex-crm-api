@@ -118,6 +118,7 @@ class ClientsService extends Service
         $client->address = $input['address'];
         $client->phone = $input['phone'];
         $client->worker = $input['worker'];
+        $client->review = $input['review'];
 
         $client->save();
 

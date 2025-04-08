@@ -48,8 +48,9 @@ Route::middleware(['auth:sanctum', 'role:root,director'])->group(function () {
 //clients routes
 Route::middleware(['auth:sanctum', 'role:root,director,lawyer'])->group(function () {
     Route::resource('/clients', ClientsController::class)->except([
-        'edit', 'create'
+        'edit', 'create', 'destroy'
     ]);
+    Route::put('/clients/activity/{id}', [ClientsController::class, 'activity']);
     Route::resource('/client_works', ClientWorksController::class)->except([
         'edit', 'create'
     ]);
@@ -65,7 +66,7 @@ Route::middleware(['auth:sanctum', 'role:root,director,lawyer'])->group(function
     Route::get('/lawyer_advocates_cases', [AdvocateCasesController::class, 'index']);
 });
 Route::middleware(['auth:sanctum', 'role:root,director'])->group(function () {
-    Route::put('/clients/activity/{id}', [ClientsController::class, 'activity']);
+    Route::delete('/clients/{id}', [ClientsController::class, 'destroy']);
     Route::get('/archive/clients', [ClientsController::class, 'archive']);
 //    Route::put('/client_works/activity/{id}', [ClientWorksController::class, 'activity']);
 });
@@ -73,8 +74,9 @@ Route::middleware(['auth:sanctum', 'role:root,director'])->group(function () {
 //subscribers routes
 Route::middleware(['auth:sanctum', 'role:root,director,lawyer'])->group(function () {
     Route::resource('/subscribers', SubscribersController::class)->except([
-        'edit', 'create'
+        'edit', 'create', 'destroy'
     ]);
+    Route::put('/subscribers/activity/{id}', [SubscribersController::class, 'activity']);
     Route::resource('/subscriber_works', SubscriberWorksController::class)->except([
         'edit', 'create'
     ]);
@@ -86,7 +88,7 @@ Route::middleware(['auth:sanctum', 'role:root,director,lawyer'])->group(function
     Route::get('/subscriber_works/{id}/files', [FilesSubscriberWorks::class, 'getFiles']);
 });
 Route::middleware(['auth:sanctum', 'role:root,director'])->group(function () {
-    Route::put('/subscribers/activity/{id}', [SubscribersController::class, 'activity']);
+    Route::delete('/subscribers/{id}', [SubscribersController::class, 'destroy']);
     Route::get('/archive/subscribers', [SubscribersController::class, 'archive']);
 });
 
@@ -100,8 +102,9 @@ Route::middleware(['auth:sanctum', 'role:root,director,advocate'])->group(functi
     ]);
     Route::get('/advocates_categories_byslug', [AdvocateCategoriesController::class, 'byslug']);
     Route::resource('/advocates_cases', AdvocateCasesController::class)->except([
-        'edit', 'create'
+        'edit', 'create', 'destroy'
     ]);
+    Route::put('/advocates_cases/activity/{id}', [AdvocateCasesController::class, 'activity']);
     Route::resource('/advocates_works', AdvocateWorksController::class)->except([
         'edit', 'create'
     ]);
@@ -118,7 +121,7 @@ Route::middleware(['auth:sanctum', 'role:root,director,advocate'])->group(functi
     ]);
 });
 Route::middleware(['auth:sanctum', 'role:root,director'])->group(function () {
-    Route::put('/advocates_cases/activity/{id}', [AdvocateCasesController::class, 'activity']);
+    Route::delete('/advocates_cases/{id}', [AdvocateCasesController::class, 'destroy']);
     Route::get('/archive/advocates_cases', [AdvocateCasesController::class, 'archive']);
 });
 

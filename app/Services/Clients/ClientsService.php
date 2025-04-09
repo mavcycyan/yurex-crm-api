@@ -16,6 +16,7 @@ class ClientsService extends Service
         if (count($input) > 0) {
             $query = self::sorting($input, $query);
             $query = self::pagination($input, $query);
+            $query = self::searching($input, $query);
             if (isset($input['with_pending'])) {
                 $query->withCount([
                     'client_works as pending_works' => function ($query) {
@@ -38,7 +39,11 @@ class ClientsService extends Service
                     'worker' => $work->worker
                 ];
             });
-        $count = Client::select('*')->where('inactive', '=', 0)->get()->count();
+        $count_query = Client::select('*')->where('inactive', '=', 0);
+        if (count($input) > 0) {
+            $count_query = self::searching($input, $count_query);
+        }
+        $count = $count_query->get()->count();
         return self::sendResponse($clients->toArray(), 'Clients returned successfully', $count);
     }
     public static function archive(Request $request) {
@@ -47,6 +52,7 @@ class ClientsService extends Service
         if (count($input) > 0) {
             $query = self::sorting($input, $query);
             $query = self::pagination($input, $query);
+            $query = self::searching($input, $query);
             if (isset($input['with_pending'])) {
                 $query->withCount([
                     'client_works as pending_works' => function ($query) {
@@ -69,7 +75,11 @@ class ClientsService extends Service
                     'worker' => $work->worker
                 ];
             });
-        $count = Client::select('*')->where('inactive', '=', 1)->get()->count();
+        $count_query = Client::select('*')->where('inactive', '=', 1);
+        if (count($input) > 0) {
+            $count_query = self::searching($input, $count_query);
+        }
+        $count = $count_query->get()->count();
         return self::sendResponse($clients->toArray(), 'Clients returned successfully', $count);
     }
 

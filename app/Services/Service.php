@@ -66,4 +66,15 @@ class Service
         }
         return $query;
     }
+    public static function searching($params, $query) {
+        if (count($params) > 0) {
+            foreach ($params as $key => $param) {
+                if (strpos($key, 'srch_') !== false) {
+                    $field_name = str_replace('srch_', '', $key);
+                    $query->where($field_name, 'LIKE', '%' . $param . '%');
+                }
+            }
+        }
+        return $query;
+    }
 }

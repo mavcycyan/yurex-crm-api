@@ -42,6 +42,7 @@ class AdvocateCasesService extends Service
                         $query = self::filtering($input, $query);
                         $query = self::sorting($input, $query);
                         $query = self::pagination($input, $query);
+                        $query = self::searching($input, $query);
                     }
                     $query->select('advocate_cases.*');
                     $advocates = User::select('id', 'name')->where('role_id', '=', 4)->get();
@@ -106,6 +107,7 @@ class AdvocateCasesService extends Service
                         ->where('advocate_category_id', $cat->id);
                     if (count($input) > 0) {
                         $count_query = self::filtering($input, $count_query);
+                        $count_query = self::searching($input, $count_query);
                     }
                     $count = $count_query->where('advocate_cases.inactive', '=', 0)->get()->count();
                 }
@@ -126,6 +128,7 @@ class AdvocateCasesService extends Service
                 $query = self::filtering($input, $query);
                 $query = self::sorting($input, $query);
                 $query = self::pagination($input, $query);
+                $query = self::searching($input, $query);
             }
             $query->select('advocate_cases.*');
             $advocates = User::where('role_id', '=', 4)->get();
@@ -167,6 +170,7 @@ class AdvocateCasesService extends Service
             $count_query = AdvocateCase::where('advocate_id', $request['advocate_id']);
             if (count($input) > 0) {
                 $count_query = self::filtering($input, $count_query);
+                $count_query = self::searching($input, $count_query);
             }
             $count = $count_query->where('advocate_cases.inactive', '=', 0)->get()->count();
         } else {
@@ -176,6 +180,7 @@ class AdvocateCasesService extends Service
                 $query = self::filtering($input, $query);
                 $query = self::sorting($input, $query);
                 $query = self::pagination($input, $query);
+                $query = self::searching($input, $query);
             }
             $advocates = User::where('role_id', '=', 4)->get();
             $query->where('advocate_cases.inactive', '=', 0);
@@ -216,6 +221,7 @@ class AdvocateCasesService extends Service
             $count_query = AdvocateCase::select('*');
             if (count($input) > 0) {
                 $count_query = self::filtering($input, $count_query);
+                $count_query = self::searching($input, $count_query);
             }
             $count = $count_query->where('advocate_cases.inactive', '=', 0)->get()->count();
         }
@@ -229,6 +235,7 @@ class AdvocateCasesService extends Service
             $query = self::filtering($input, $query);
             $query = self::sorting($input, $query);
             $query = self::pagination($input, $query);
+            $query = self::searching($input, $query);
         }
         $advocates = User::where('role_id', '=', 4)->get();
         $query->where('advocate_cases.inactive', '=', 1);
@@ -269,6 +276,7 @@ class AdvocateCasesService extends Service
         $count_query = AdvocateCase::select('*');
         if (count($input) > 0) {
             $count_query = self::filtering($input, $count_query);
+            $count_query = self::searching($input, $count_query);
         }
         $count = $count_query->where('advocate_cases.inactive', '=', 1)->get()->count();
         $response_extras = ['response' => 'cases'];

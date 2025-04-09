@@ -21,6 +21,7 @@ class SubscribersService extends Service
         if (count($input) > 0) {
             $query = self::sorting($input, $query);
             $query = self::pagination($input, $query);
+            $query = self::searching($input, $query);
             if (isset($input['with_pending'])) {
                 $query->withCount([
                     'subscriber_works as pending_works' => function ($query) {
@@ -53,7 +54,11 @@ class SubscribersService extends Service
                     'fee_status' => $work->latestFinSubscriberPrice->status ?? null,
                 ];
             });
-        $count = Subscriber::select('*')->where('inactive', '=', 0)->get()->count();
+        $count_query = Subscriber::select('*')->where('inactive', '=', 0);
+        if (count($input) > 0) {
+            $count_query = self::searching($input, $count_query);
+        }
+        $count = $count_query->get()->count();
         return self::sendResponse($subscribers->toArray(), 'Subscribers returned successfully', $count);
     }
     public static function archive(Request $request) {
@@ -62,6 +67,7 @@ class SubscribersService extends Service
         if (count($input) > 0) {
             $query = self::sorting($input, $query);
             $query = self::pagination($input, $query);
+            $query = self::searching($input, $query);
         }
         $users = User::where('role_id', '=', 4)->get();
         $query->where('inactive', '=', 1);
@@ -86,7 +92,11 @@ class SubscribersService extends Service
                     'fee_status' => $work->latestFinSubscriberPrice->status ?? null,
                 ];
             });
-        $count = Subscriber::select('*')->where('inactive', '=', 1)->get()->count();
+        $count_query = Subscriber::select('*')->where('inactive', '=', 1);
+        if (count($input) > 0) {
+            $count_query = self::searching($input, $count_query);
+        }
+        $count = $count_query->get()->count();
         return self::sendResponse($subscribers->toArray(), 'Subscribers returned successfully', $count);
     }
 

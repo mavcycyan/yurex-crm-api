@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('client_works', function (Blueprint $table) {
             $table->id();
             $table->date('visit_date');
-            $table->date('visit_date_end');
+            $table->date('visit_date_end')->nullable();
             $table->string('visit_purpose');
             $table->longText('what_done')->nullable();
             $table->string('result')->nullable();

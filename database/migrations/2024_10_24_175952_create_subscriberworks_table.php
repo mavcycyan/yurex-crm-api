@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('subscriber_works', function (Blueprint $table) {
             $table->id();
             $table->date('date');
-            $table->date('date_end');
+            $table->date('date_end')->nullable();
             $table->string('name')->nullable();
             $table->longText('what_done')->nullable();
             $table->string('result')->nullable();

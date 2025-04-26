@@ -17,7 +17,15 @@ class SubscrCalculationsService extends Service
     public static function index(Request $request) {
         $query = Subscriber::select('id', 'name', 'holder');
         $query->where('inactive', '=', 0);
-        $subscribers = $query->get();
+        $subscribers = $query->get()
+            ->map(function ($subscriber) {
+                return [
+                    'id' => $subscriber->id,
+                    'name' => $subscriber->name,
+                    'holder' => $subscriber->holder,
+                    'fee' => $subscriber->latestFinSubscriberPrice->price ?? null
+                ];
+            });
         ///
 
         unset($query);

@@ -168,7 +168,7 @@ class SubscribersService extends Service
         $subscriber->legal_address = $input['legal_address'];
         $subscriber->actual_address = $input['actual_address'];
         $subscriber->info = $input['info'];
-//        $subscriber->holder = $input['holder'];
+        $subscriber->holder = $input['holder'];
 
         $subscriber->save();
 

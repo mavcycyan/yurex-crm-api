@@ -5,6 +5,7 @@ use App\Http\Controllers\Advocates\AdvocateCategoriesController;
 use App\Http\Controllers\Advocates\AdvocatesController;
 use App\Http\Controllers\Advocates\AdvocateWorksController;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Calculations\SubscrCalculations;
 use App\Http\Controllers\Clients\ClientsController;
 use App\Http\Controllers\Clients\ClientWorksController;
 use App\Http\Controllers\Files\Advocate\FilesAdvocateWorks;
@@ -149,4 +150,12 @@ Route::middleware(['auth:sanctum'])->group(function () {
         'edit', 'create'
     ]);
     Route::put('/fin/advocatecases/prices_bulk_update', [FinAdvocateCasesPrices::class, 'bulk_update']);
+});
+
+// subscribers calculations
+
+Route::middleware(['auth:sanctum', 'role:root,director'])->group(function () {
+    Route::resource('/calculations/subscribers', SubscrCalculations::class)->except([
+        'edit', 'create'
+    ]);
 });

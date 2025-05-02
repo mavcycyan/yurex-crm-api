@@ -59,21 +59,62 @@ class SubscrCalculationsService extends Service
     }
 
     public static function show($id, Request $request) {
-        return self::sendResponse([], 'Show');
+        $subsc_calc = SubscrCalculation::find($id);
+        $subsc_calc->payments = unserialize($subsc_calc->payments);
+        return self::sendResponse($subsc_calc, 'Subscriber calculation returned successfully');
     }
 
     public static function store(Request $request) {
+        $input = $request->all();
 
-        return self::sendResponse([], 'Store');
+        $validator = Validator::make($input, [
+            'subscriber_id' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return self::sendError('Validation Error.', $validator->errors());
+        }
+        $month = Carbon::parse($input['date']);
+        $subsc_calc = SubscrCalculation::select('id')
+                        ->where('subscriber_id', '=', $input['subscriber_id'])
+                        ->where('date', '=', $month->copy()->startOfMonth())
+                        ->first();
+        if ($subsc_calc !== null) {
+            return self::sendError('This subscriber (' . $input['subscriber_id'] . ') already has records for this month (' . $input['date'] . ').', []);
+        }
+        if (isset($input['payments'])) {
+            $input['payments'] = serialize($input['payments']);
+        } else {
+            $input['payments'] = serialize(array());
+        }
+        $input['date'] = $month->copy()->startOfMonth();
+        $subscriber = SubscrCalculation::create($input);
+
+        return self::sendResponse($subscriber, 'Subscriber calculation created successfully');
     }
 
     public static function update(Request $request, SubscrCalculation $subscriber) {
+        $input = $request->all();
 
-        return self::sendResponse($subscriber, 'Update');
-    }
+        $validator = Validator::make($input, [
+            'subscriber_id' => 'required',
+        ]);
 
-    public static function destroy($id) {
-        return response()->json(['success' => true,'message' => 'Destroy'], 200);
+        if ($validator->fails()) {
+            return self::sendError('Validation Error.', $validator->errors());
+        }
+
+        $subscriber->subscriber_id = $input['subscriber_id'];
+        $subscriber->chalk = $input['chalk'];
+        if (isset($input['payments'])) {
+            $subscriber->payments = serialize($input['payments']);
+        } else {
+            $subscriber->payments = serialize(array());
+        }
+
+        $subscriber->save();
+
+        return self::sendResponse($subscriber, 'Subscriber calculation updated successfully');
     }
 
     public static function get_current_month_data(Carbon $month) {

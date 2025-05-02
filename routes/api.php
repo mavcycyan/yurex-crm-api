@@ -156,6 +156,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
 Route::middleware(['auth:sanctum', 'role:root,director'])->group(function () {
     Route::resource('/calculations/subscribers', SubscrCalculations::class)->except([
-        'edit', 'create'
+        'edit', 'create', 'destroy'
     ]);
 });

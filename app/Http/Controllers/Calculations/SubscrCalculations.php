@@ -21,7 +21,4 @@ class SubscrCalculations extends Controller
     public function update(Request $request, SubscrCalculation $subscriber) {
         return SubscrCalculationsService::update($request, $subscriber);
     }
-    public function destroy($id) {
-        return SubscrCalculationsService::destroy($id);
-    }
 }

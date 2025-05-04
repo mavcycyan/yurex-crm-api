@@ -62,7 +62,7 @@ class VerifyCsrfToken extends Middleware
 
         'api/archive',
 
-        'calculations/subscribers',
-        'calculations/subscribers/*'
+        'api/calculations/subscribers',
+        'api/calculations/subscribers/*'
     ];
 }

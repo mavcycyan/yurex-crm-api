@@ -15,6 +15,9 @@ class Controller extends BaseController
 
     public function checkAndProcessSubscrCalc()
     {
+
+//        $previousMonth = Carbon::parse('2025-03-01')->startOfMonth();
+//        \App\Services\Calculations\SubscrCalculations\SubscrCalcLastArchive::generateForMonth($previousMonth);
         $setting = \App\Models\Settings\Settings::where('key', 'subscr_calc_date')->first();
         if (!$setting) {
             $setting = \App\Models\Settings\Settings::create([

@@ -49,7 +49,7 @@ class SubscrCalculationsService extends Service
                     'chalk' => $calc->chalk,
                     'payments' => ($calc->payments) ? unserialize($calc->payments) : null,
                     'date' => $calc->date,
-                    'subscriber_id' => $calc->subscriber_id,
+                    'subscriber_id' => (int) $calc->subscriber_id,
                 ];
             });
         ///

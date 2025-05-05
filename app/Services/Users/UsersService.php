@@ -22,7 +22,21 @@ class UsersService extends Service
             $query = self::pagination($input, $query);
         }
 
-        $users = $query->get();
+        $users = $query->get()
+            ->map(function ($user) {
+                return [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'birthday' => $user->birthday,
+                    'address' => $user->address,
+                    'phone' => $user->phone,
+                    'role_id' => (int) $user->role_id,
+                    'inactive' => (int) $user->inactive,
+                    'certificate_num' => $user->certificate_num,
+                    'certificate_place' => $user->certificate_place,
+                ];
+            });
         $count = User::select('*')->get()->count();
         return self::sendResponse($users->toArray(), 'Users returned successfully', $count);
     }
@@ -40,6 +54,7 @@ class UsersService extends Service
 
     public static function show($id, Request $request) {
         $user = User::find($id);
+        $user->inactive = (int) $user->inactive;
         return self::sendResponse($user, 'User "' . $user->full_name . '" returned successfully');
     }
 

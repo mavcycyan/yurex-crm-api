@@ -25,6 +25,7 @@ class User extends Authenticatable
         'address',
         'phone',
         'role_id',
+        'inactive',
         'certificate_num',
         'certificate_place',
     ];

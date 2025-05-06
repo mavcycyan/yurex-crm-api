@@ -23,6 +23,10 @@ class ClientsService extends Service
                         $query->where('result', 'pending');
                     }
                 ]);
+
+                if (isset($input['filtcust_pending']) && $input['filtcust_pending'] === 'pending') {
+                    $query->having('pending_works', '>', 0);
+                }
             }
         }
         $query->where('inactive', '=', 0);

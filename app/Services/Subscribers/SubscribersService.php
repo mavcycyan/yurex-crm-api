@@ -28,6 +28,10 @@ class SubscribersService extends Service
                         $query->where('result', 'pending');
                     }
                 ]);
+
+                if (isset($input['filtcust_pending']) && $input['filtcust_pending'] === 'pending') {
+                    $query->having('pending_works', '>', 0);
+                }
             }
         }
         $users = User::where('role_id', '=', 4)->get();

@@ -158,4 +158,5 @@ Route::middleware(['auth:sanctum', 'role:root,director'])->group(function () {
     Route::resource('/calculations/subscribers', SubscrCalculations::class)->except([
         'edit', 'create', 'destroy'
     ]);
+    Route::put('/subscribers_stop_reason/{id}', [SubscribersController::class, 'update_stop_reason']);
 });

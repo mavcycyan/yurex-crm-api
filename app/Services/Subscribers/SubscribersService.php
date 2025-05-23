@@ -5,6 +5,7 @@ namespace App\Services\Subscribers;
 use App\Models\Auth\User;
 use App\Models\Finance\Subscriber\FinSubscriberPrice;
 use App\Models\Subscriber\Subscriber;
+use App\Services\Calculations\SubscrCalculations\SubscrCalcLastArchive;
 use App\Services\Finances\Subscribers\FinSubscribersPaymentsService;
 use App\Services\Finances\Subscribers\FinSubscribersPricesService;
 use App\Services\Service;
@@ -179,6 +180,25 @@ class SubscribersService extends Service
         return self::sendResponse($subscriber, 'Subscriber "' . $subscriber->name . '" updated successfully.');
     }
 
+    public static function update_stop_reason(Request $request, $id) {
+        $subscriber = Subscriber::find($id);
+        $input = $request->all();
+
+//        $validator = Validator::make($input, [
+//            'stop_reason' => 'required',
+//        ]);
+//
+//        if($validator->fails()){
+//            return self::sendError('Validation Error.', $validator->errors());
+//        }
+
+        $subscriber->stop_reason = $input['stop_reason'];
+
+        $subscriber->save();
+
+        return self::sendResponse($subscriber, 'Subscriber "' . $subscriber->name . '" stop reason updated successfully.');
+    }
+
     public static function activity(Request $request, $id) {
         $input = $request->all();
         $subscriber = Subscriber::find($id);
@@ -192,6 +212,9 @@ class SubscribersService extends Service
         }
 
         $subscriber->inactive = $input['inactive'];
+        if ($input['inactive'] === 1 || $input['inactive'] === '1') {
+            SubscrCalcLastArchive::generateForInactive($id);
+        }
 
         $subscriber->save();
 

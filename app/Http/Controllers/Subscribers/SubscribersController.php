@@ -28,6 +28,9 @@ class SubscribersController extends Controller
     public function activity(Request $request, $id) {
         return SubscribersService::activity($request, $id);
     }
+    public function update_stop_reason(Request $request, $id) {
+        return SubscribersService::update_stop_reason($request, $id);
+    }
     public function destroy($id) {
         return SubscribersService::destroy($id);
     }

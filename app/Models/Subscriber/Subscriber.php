@@ -27,7 +27,8 @@ class Subscriber extends Model
         'actual_address',
         'holder',
         'info',
-        'inactive'
+        'inactive',
+        'stop_reason'
     ];
 
     public function subscriber_works(): HasMany

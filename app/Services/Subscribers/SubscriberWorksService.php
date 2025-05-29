@@ -55,6 +55,7 @@ class SubscriberWorksService extends Service
                 'workers_names' => $work->workers_names,
                 'fee' => $work->latestFinSubscrWorkPrice->price ?? null,
                 'fee_status' => $work->latestFinSubscrWorkPrice->status ?? null,
+                'fee_currency' => $work->latestFinSubscrWorkPrice->price_cur ?? null,
                 'subscriber_id' => $work->subscriber_id,
             ];
         });

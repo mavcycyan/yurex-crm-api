@@ -56,6 +56,7 @@ class ClientWorksService extends Service
                     'workers_names' => $work->workers_names,
                     'fee' => $work->latestFinClientWorkPrice->price ?? null,
                     'fee_status' => $work->latestFinClientWorkPrice->status ?? null,
+                    'fee_currency' => $work->latestFinClientWorkPrice->price_cur ?? null,
                     'client_id' => $work->client_id,
                 ];
             });
@@ -113,6 +114,7 @@ class ClientWorksService extends Service
                 'workers_names' => $work->workers_names,
                 'fee' => $work->latestFinClientWorkPrice->price ?? null,
                 'fee_status' => $work->latestFinClientWorkPrice->status ?? null,
+                'fee_currency' => $work->latestFinClientWorkPrice->price_cur ?? null,
                 'client_id' => $work->client_id,
             ];
         });

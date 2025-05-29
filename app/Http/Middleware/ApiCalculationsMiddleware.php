@@ -15,9 +15,9 @@ class ApiCalculationsMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if ($request->is('api/*')) {
-            app()->call([app()->make(\App\Http\Controllers\Controller::class), 'checkAndProcessSubscrCalc']);
-        }
+//        if ($request->is('api/*')) {
+//            app()->call([app()->make(\App\Http\Controllers\Controller::class), 'checkAndProcessSubscrCalc']);
+//        }
 
         return $next($request);
     }

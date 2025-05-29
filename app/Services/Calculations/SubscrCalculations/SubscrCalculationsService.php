@@ -57,8 +57,9 @@ class SubscrCalculationsService extends Service
             });
         ///
 
-        $current_month_data = self::get_current_month_data(Carbon::today());
-        return self::sendResponse(array('subscribers' => $subscribers, 'calculations' => $subsc_calcs, 'current_month_data' => $current_month_data), 'Subscribers calculations returned successfully');
+//        $current_month_data = self::get_current_month_data(Carbon::today());
+//        return self::sendResponse(array('subscribers' => $subscribers, 'calculations' => $subsc_calcs, 'current_month_data' => $current_month_data), 'Subscribers calculations returned successfully');
+        return self::sendResponse(array('subscribers' => $subscribers, 'calculations' => $subsc_calcs, 'current_month_data' => array()), 'Subscribers calculations returned successfully');
     }
 
     public static function show($id, Request $request) {
